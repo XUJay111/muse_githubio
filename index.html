@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MUSE - Agentic 3D Scene Authoring</title>
+  <meta name="description" content="MUSE: Agentic 3D Scene Authoring via Memory-Grounded Incremental Requirement Satisfaction">
+  <link rel="preload" as="image" href="static/demo/02_livingroom_media_add_bookshelf/stage3-merged.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top">MUSE</a>
+      <div class="nav-links">
+        <a href="#demo">Demo</a>
+        <a href="#abstract">Abstract</a>
+        <a href="#method">Method</a>
+        <a href="#benchmark">AuthorBench</a>
+        <a href="#results">Results</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#citation">Citation</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="studio-hero" id="top">
+    <div class="studio-hero-inner" id="demo">
+      <section class="hero-copy" aria-labelledby="paper-title">
+        <p class="venue">Preprint</p>
+        <h1 id="paper-title">MUSE: Agentic 3D Scene Authoring via Memory-Grounded Incremental Requirement Satisfaction</h1>
+        <p class="hero-summary">
+          A memory-grounded agentic framework for verified local construction and preservation-aware
+          editing of 3D indoor scenes.
+        </p>
+
+        <div class="authors">
+          <span>Ruijie Xu<sup>1,*</sup></span>
+          <span>Xinnan Zhu<sup>1,*</sup></span>
+          <span>Jiayu Ying<sup>1</sup></span>
+          <span>Daoguo Dong<sup>2</sup></span>
+          <span>Yuzhou Ji<sup>3</sup></span>
+          <span>Xin Tan<sup>1,#</sup></span>
+        </div>
+
+        <div class="affiliations">
+          <span><sup>1</sup>East China Normal University</span>
+          <span><sup>2</sup>Fudan University</span>
+          <span><sup>3</sup>Shanghai Jiao Tong University</span>
+        </div>
+        <div class="author-notes">
+          <span>* Equal contribution</span>
+          <span># Corresponding author</span>
+        </div>
+
+        <div class="actions">
+          <a class="button primary" href="static/muse-paper.pdf">Paper PDF</a>
+          <a class="button" href="#citation">BibTeX</a>
+          <span class="button muted" aria-disabled="true">Code coming soon</span>
+          <span class="button muted" aria-disabled="true">Benchmark coming soon</span>
+        </div>
+
+        <div class="hero-highlights">
+          <span><strong>80.7%</strong> All-Goal Success</span>
+          <span><strong>99.9%</strong> Preservation</span>
+          <span><strong>145</strong> Test Cases</span>
+        </div>
+      </section>
+
+      <section class="demo-console" aria-label="MUSE Studio static demo">
+        <div class="console-topbar">
+          <div>
+            <span class="status-dot"></span>
+            <span>MUSE Studio Demo</span>
+          </div>
+          <span class="status-chip">Static / no backend</span>
+        </div>
+
+        <div class="demo-shell">
+          <aside class="case-rail" aria-label="Demo cases">
+            <div class="rail-heading">
+              <span>AuthorBench chains</span>
+              <strong>8 cases</strong>
+            </div>
+            <select class="case-select" data-demo-case-select aria-label="Select demo case"></select>
+            <div class="case-list" data-demo-case-list></div>
+          </aside>
+
+          <div class="demo-workspace">
+            <div class="workspace-header">
+              <div>
+                <p class="workspace-kicker" data-demo-meta></p>
+                <h2 data-demo-title>Living Room Media Wall</h2>
+              </div>
+              <span class="status-chip success">Verified stages</span>
+            </div>
+
+            <div class="tab-row" data-demo-stage-tabs role="tablist" aria-label="Stage selector"></div>
+
+            <div class="prompt-panel">
+              <span data-demo-stage-label></span>
+              <p data-demo-prompt></p>
+            </div>
+
+            <div class="media-toolbar">
+              <div class="tab-row compact" data-demo-view-tabs role="tablist" aria-label="Render view selector"></div>
+              <span>3D loads on demand</span>
+            </div>
+
+            <div class="demo-media" data-demo-image-wrap>
+              <img data-demo-image src="" alt="" loading="lazy">
+            </div>
+            <div class="demo-model" data-demo-model-wrap hidden>
+              <div class="model-status" data-demo-model-status>Loading 3D scene...</div>
+              <div class="model-canvas" data-demo-model></div>
+            </div>
+
+            <div class="requirement-grid">
+              <div>
+                <strong>Preserve</strong>
+                <div class="pill-row" data-demo-preserve></div>
+              </div>
+              <div>
+                <strong>Expected</strong>
+                <div class="pill-row" data-demo-expected></div>
+              </div>
+              <div>
+                <strong>Absent</strong>
+                <div class="pill-row" data-demo-absent></div>
+              </div>
+            </div>
+
+            <div class="memory-panel" aria-label="Memory trace">
+              <div class="memory-panel-head">
+                <span>Memory Trace</span>
+                <strong data-demo-memory-status>BBox-clear case</strong>
+              </div>
+              <div class="memory-flow">
+                <div class="memory-node">
+                  <span>Working Memory</span>
+                  <strong data-demo-working-memory>Stage goals tracked</strong>
+                  <em data-demo-working-count></em>
+                </div>
+                <div class="memory-link" aria-hidden="true"></div>
+                <div class="memory-node">
+                  <span>Scene Memory</span>
+                  <strong data-demo-scene-memory>Preserved bindings</strong>
+                  <em data-demo-scene-count></em>
+                </div>
+                <div class="memory-link" aria-hidden="true"></div>
+                <div class="memory-node">
+                  <span>Skill Memory</span>
+                  <strong data-demo-skill-memory>Reusable edit pattern</strong>
+                  <em data-demo-skill-tag></em>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </header>
+
+  <main>
+    <section class="section" id="abstract">
+      <div class="container narrow">
+        <h2>Abstract</h2>
+        <p>
+          Text-driven 3D scene generation is a promising technique for digital content creation,
+          embodied AI simulation, and interactive design, yet practical workflows often require
+          refining, extending, or correcting existing scenes while preserving non-target content.
+          Existing methods can produce realistic and structurally plausible scenes, but they
+          generally lack editability with requirement-level state tracking, so part-level failures
+          often lead to full-scene regeneration or manual intervention. To tackle this challenge,
+          we formulate controllable 3D scene authoring as incremental requirement satisfaction,
+          unifying construction and editing. In this paper, we present <strong>MUSE</strong>, a
+          memory-grounded multi-agent framework in which an Architect compiles instructions into
+          structured requirements, a Sculptor executes local scene operations, and an Inspector
+          verifies each step while updating Working, Scene, and Skill Memory.
+        </p>
+        <p>
+          To evaluate requirement-level controllability and preservation-aware editing, we
+          introduce AuthorBench, offering 145 constrained construction cases and a 1,584-case
+          preservation-aware editing pool paired with external structured checks. On full
+          construction cases, <strong>MUSE</strong> improves All-Goal success from 37.9 to 80.7
+          and surface-constraint fulfillment from 35.0 to 92.6 over the strongest baseline. On a
+          stratified 240-case editing test split, <strong>MUSE</strong> achieves 49.6 All-Goal
+          success, 99.9 preservation rate, and only 0.6 unintended change rate. Beyond automated
+          metrics, human evaluations on compared local-editing baselines support stronger
+          alignment with user intent, and downstream navigation-proxy tests indicate stronger
+          spatial stability. Combined with ablations validating our memory designs, these results
+          establish MUSE as an effective framework for controllable 3D scene authoring.
+        </p>
+      </div>
+    </section>
+
+    <section class="section alt" id="method">
+      <div class="wide">
+        <h2>Method</h2>
+        <p class="section-lead">
+          MUSE turns scene creation and editing into a closed-loop authoring process over
+          explicit requirements and persistent memory.
+        </p>
+        <figure class="figure-block">
+          <img src="static/figures/pipeline.png" alt="MUSE pipeline overview">
+          <figcaption>
+            The Architect compiles instructions into a structured requirement program, the
+            Sculptor performs focused local actions with protection-aware repair, and the
+            Inspector verifies progress while consolidating Working and Scene Memory.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="benchmark">
+      <div class="wide">
+        <h2>AuthorBench</h2>
+        <p class="section-lead">
+          AuthorBench evaluates requirement-level scene authoring across construction and
+          preservation-aware editing, using structured external checks rather than internal
+          model state.
+        </p>
+        <div class="split">
+          <figure class="figure-block compact">
+            <img src="static/figures/benchmark.png" alt="AuthorBench benchmark overview">
+          </figure>
+          <div class="metric-grid">
+            <div class="metric">
+              <span class="metric-value">145</span>
+              <span class="metric-label">construction cases</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">1,584</span>
+              <span class="metric-label">editing pool cases</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">240</span>
+              <span class="metric-label">fixed editing split</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">720</span>
+              <span class="metric-label">preservation checks</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="results">
+      <div class="wide">
+        <h2>Results</h2>
+        <p class="section-lead">
+          MUSE improves completion while preserving non-target scene content and maintaining
+          physical validity.
+        </p>
+
+        <div class="result-grid">
+          <article class="result-card">
+            <h3>Construction</h3>
+            <p class="big-number">80.7%</p>
+            <p>All-Goal success, compared with 37.9% for the strongest one-shot baseline.</p>
+          </article>
+          <article class="result-card">
+            <h3>Surface Constraints</h3>
+            <p class="big-number">92.6%</p>
+            <p>Surface fulfillment, addressing a major weakness of prior layout methods.</p>
+          </article>
+          <article class="result-card">
+            <h3>Editing Locality</h3>
+            <p class="big-number">99.9%</p>
+            <p>Preservation rate with only 0.6% unintended change rate.</p>
+          </article>
+          <article class="result-card">
+            <h3>Complexity Robustness</h3>
+            <p class="big-number">96.6%</p>
+            <p>Construction retention from easy to dense complex cases.</p>
+          </article>
+        </div>
+
+        <figure class="figure-block tradeoff-figure">
+          <img src="static/figures/editing-tradeoff.png" alt="Completion-locality trade-off plot">
+          <figcaption>
+            MUSE occupies the preferred region of higher fulfillment and lower unintended changes.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="gallery">
+      <div class="wide">
+        <h2>Qualitative Comparisons</h2>
+        <p class="section-lead">
+          MUSE produces organized layouts in construction and performs precise local edits
+          without rewriting protected scene context.
+        </p>
+
+        <figure class="figure-block">
+          <img src="static/figures/qualitative-main.png" alt="Main qualitative construction and editing comparison">
+          <figcaption>Main qualitative comparisons showing MUSE's ability to construct organized layouts and perform precise preservation-aware edits.</figcaption>
+        </figure>
+
+        <figure class="figure-block">
+          <img src="static/figures/qualitative-construction.png" alt="Additional construction examples">
+          <figcaption>Additional construction comparisons under multi-object spatial and support constraints.</figcaption>
+        </figure>
+
+        <figure class="figure-block centered-result">
+          <img src="static/figures/qualitative-editing.png" alt="Additional preservation-aware editing examples">
+          <figcaption>Additional preservation-aware editing cases with coupled replacement, movement, and insertion.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section alt" id="citation">
+      <div class="container narrow">
+        <h2>Citation</h2>
+        <pre class="bibtex" id="bibtex">@article{xu2026muse,
+  title={MUSE: Agentic 3D Scene Authoring via Memory-Grounded Incremental Requirement Satisfaction},
+  author={Xu, Ruijie and Zhu, Xinnan and Ying, Jiayu and Dong, Daoguo and Ji, Yuzhou and Tan, Xin},
+  journal={arXiv preprint},
+  year={2026}
+}</pre>
+        <button class="copy-button" type="button" id="copyBibtex">Copy BibTeX</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>MUSE - Agentic 3D Scene Authoring</p>
+    </div>
+  </footer>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./static/vendor/three/build/three.module.js",
+        "three/addons/": "./static/vendor/three/examples/jsm/"
+      }
+    }
+  </script>
+  <script src="static/demo-cases.js"></script>
+  <script type="module" src="static/demo-viewer.js"></script>
+  <script>
+    const copyButton = document.getElementById('copyBibtex');
+    const bibtex = document.getElementById('bibtex');
+
+    copyButton.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(bibtex.textContent);
+      copyButton.textContent = 'Copied';
+      setTimeout(() => {
+        copyButton.textContent = 'Copy BibTeX';
+      }, 1400);
+    });
+  </script>
+</body>
+</html>
