@@ -9,6 +9,7 @@ const state = {
 
 const els = {
   caseList: document.querySelector("[data-demo-case-list]"),
+  caseCount: document.querySelector("[data-demo-case-count]"),
   caseSelect: document.querySelector("[data-demo-case-select]"),
   stageTabs: document.querySelector("[data-demo-stage-tabs]"),
   viewTabs: document.querySelector("[data-demo-view-tabs]"),
@@ -77,6 +78,9 @@ function renderPills(container, values, emptyText) {
 
 function renderCaseButtons() {
   els.caseList.innerHTML = "";
+  if (els.caseCount) {
+    els.caseCount.textContent = `${demoCases.length} cases`;
+  }
   demoCases.forEach((item, index) => {
     const button = document.createElement("button");
     button.type = "button";
@@ -412,6 +416,10 @@ class ProjectPageThreeViewer {
     const THREE = this.THREE;
     model.traverse((node) => {
       if (!node.isMesh) return;
+      if (this.isAssetShadowMesh(node)) {
+        node.visible = false;
+        return;
+      }
       const nodeName = (node.name || "").toLowerCase();
       const isWall = nodeName.startsWith("wall_");
       node.castShadow = !isWall;
@@ -434,6 +442,20 @@ class ProjectPageThreeViewer {
       });
       node.material = Array.isArray(node.material) ? preparedMaterials : preparedMaterials[0];
     });
+  }
+
+  isAssetShadowMesh(node) {
+    const materialNames = (Array.isArray(node.material) ? node.material : [node.material])
+      .map((material) => material?.name || "");
+    const names = [
+      node.name,
+      node.geometry?.name,
+      node.userData?.name,
+      ...materialNames
+    ]
+      .filter(Boolean)
+      .map((name) => String(name).toLowerCase());
+    return names.some((name) => name === "shadow" || name.startsWith("shadow_") || name.endsWith("_shadow"));
   }
 
   frameModel() {

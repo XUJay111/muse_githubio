@@ -438,5 +438,335 @@ window.MUSE_DEMO_CASES = [
         }
       }
     ]
+  },
+  {
+    id: "03_diningroom_hosting_add_rug",
+    title: "Dining Room Rug Addition",
+    roomType: "Dining room",
+    editType: "Add object",
+    accent: "Rug under table",
+    quality: "bbox-clear",
+    finalGlb: "static/demo/03_diningroom_hosting_add_rug/final_scene.glb",
+    stageGlbs: [
+      "static/demo/03_diningroom_hosting_add_rug/stage1.glb",
+      "static/demo/03_diningroom_hosting_add_rug/stage2.glb",
+      "static/demo/03_diningroom_hosting_add_rug/stage3.glb"
+    ],
+    stages: [
+      {
+        label: "Create",
+        title: "Base dining room",
+        prompt: "Create a clean dining room with one rectangular dining table, four chairs, and one sideboard. Keep it open and tidy.",
+        preserve: [],
+        expected: ["dining table", "chair", "sideboard"],
+        absent: [],
+        images: {
+          merged: "static/demo/03_diningroom_hosting_add_rug/stage1-merged.png",
+          diag: "static/demo/03_diningroom_hosting_add_rug/stage1-diag.png",
+          top: "static/demo/03_diningroom_hosting_add_rug/stage1-top.png"
+        }
+      },
+      {
+        label: "Edit 1",
+        title: "Add bar cart and lamp",
+        prompt: "Starting from the current dining room scene, keep the dining table and sideboard. Add one bar cart and one floor lamp.",
+        preserve: ["dining table", "sideboard"],
+        expected: ["dining table", "chair", "sideboard", "bar cart", "floor lamp"],
+        absent: [],
+        images: {
+          merged: "static/demo/03_diningroom_hosting_add_rug/stage2-merged.png",
+          diag: "static/demo/03_diningroom_hosting_add_rug/stage2-diag.png",
+          top: "static/demo/03_diningroom_hosting_add_rug/stage2-top.png"
+        }
+      },
+      {
+        label: "Edit 2",
+        title: "Add rug",
+        prompt: "Starting from the current dining room scene, keep the dining table, chairs, sideboard, bar cart, and floor lamp. Add one rug under the dining table.",
+        preserve: ["dining table", "chair", "sideboard", "bar cart", "floor lamp"],
+        expected: ["dining table", "chair", "sideboard", "bar cart", "floor lamp", "rug"],
+        absent: [],
+        images: {
+          merged: "static/demo/03_diningroom_hosting_add_rug/stage3-merged.png",
+          diag: "static/demo/03_diningroom_hosting_add_rug/stage3-diag.png",
+          top: "static/demo/03_diningroom_hosting_add_rug/stage3-top.png"
+        }
+      }
+    ]
+  },
+  {
+    id: "22_diningroom_move_bar_cart",
+    title: "Dining Room Bar Cart Move",
+    roomType: "Dining room",
+    editType: "Move object",
+    accent: "Bar cart relocation",
+    quality: "bbox-clear",
+    finalGlb: "static/demo/22_diningroom_move_bar_cart/final_scene.glb",
+    stageGlbs: [
+      "static/demo/22_diningroom_move_bar_cart/stage1.glb",
+      "static/demo/22_diningroom_move_bar_cart/stage2.glb",
+      "static/demo/22_diningroom_move_bar_cart/stage3.glb"
+    ],
+    stages: [
+      {
+        label: "Create",
+        title: "Base dining room",
+        prompt: "Create a tidy dining room with one dining table, four chairs, and one sideboard.",
+        preserve: [],
+        expected: ["dining table", "chair", "sideboard"],
+        absent: [],
+        images: {
+          merged: "static/demo/22_diningroom_move_bar_cart/stage1-merged.png",
+          diag: "static/demo/22_diningroom_move_bar_cart/stage1-diag.png",
+          top: "static/demo/22_diningroom_move_bar_cart/stage1-top.png"
+        }
+      },
+      {
+        label: "Edit 1",
+        title: "Add cart and plant",
+        prompt: "Starting from the current dining room scene, keep the dining table and sideboard. Add one bar cart and one potted plant.",
+        preserve: ["dining table", "sideboard"],
+        expected: ["dining table", "chair", "sideboard", "bar cart", "plant"],
+        absent: [],
+        images: {
+          merged: "static/demo/22_diningroom_move_bar_cart/stage2-merged.png",
+          diag: "static/demo/22_diningroom_move_bar_cart/stage2-diag.png",
+          top: "static/demo/22_diningroom_move_bar_cart/stage2-top.png"
+        }
+      },
+      {
+        label: "Edit 2",
+        title: "Move bar cart",
+        prompt: "Starting from the current dining room scene, keep dining table, chairs, sideboard, and plant. Move the bar cart to the right of the sideboard.",
+        preserve: ["dining table", "chair", "sideboard", "plant"],
+        expected: ["dining table", "chair", "sideboard", "bar cart", "plant"],
+        absent: [],
+        images: {
+          merged: "static/demo/22_diningroom_move_bar_cart/stage3-merged.png",
+          diag: "static/demo/22_diningroom_move_bar_cart/stage3-diag.png",
+          top: "static/demo/22_diningroom_move_bar_cart/stage3-top.png"
+        }
+      }
+    ]
+  },
+  {
+    id: "31_bedroom_gallery_delete_wall_mirror",
+    title: "Bedroom Mirror Removal",
+    roomType: "Bedroom",
+    editType: "Delete object",
+    accent: "Wall mirror removal",
+    quality: "bbox-clear",
+    finalGlb: "static/demo/31_bedroom_gallery_delete_wall_mirror/final_scene.glb",
+    stageGlbs: [
+      "static/demo/31_bedroom_gallery_delete_wall_mirror/stage1.glb",
+      "static/demo/31_bedroom_gallery_delete_wall_mirror/stage2.glb",
+      "static/demo/31_bedroom_gallery_delete_wall_mirror/stage3.glb"
+    ],
+    stages: [
+      {
+        label: "Create",
+        title: "Base bedroom",
+        prompt: "Create a calm bedroom with one double bed, one nightstand, and one dresser. Keep the layout clean and open.",
+        preserve: [],
+        expected: ["bed", "nightstand", "dresser"],
+        absent: [],
+        images: {
+          merged: "static/demo/31_bedroom_gallery_delete_wall_mirror/stage1-merged.png",
+          diag: "static/demo/31_bedroom_gallery_delete_wall_mirror/stage1-diag.png",
+          top: "static/demo/31_bedroom_gallery_delete_wall_mirror/stage1-top.png"
+        }
+      },
+      {
+        label: "Edit 1",
+        title: "Add bench and mirror",
+        prompt: "Starting from the current bedroom scene, keep bed, nightstand, and dresser. Add one upholstered bench and one wall mirror above the dresser.",
+        preserve: ["bed", "nightstand", "dresser"],
+        expected: ["bed", "nightstand", "dresser", "bench", "wall mirror"],
+        absent: [],
+        images: {
+          merged: "static/demo/31_bedroom_gallery_delete_wall_mirror/stage2-merged.png",
+          diag: "static/demo/31_bedroom_gallery_delete_wall_mirror/stage2-diag.png",
+          top: "static/demo/31_bedroom_gallery_delete_wall_mirror/stage2-top.png"
+        }
+      },
+      {
+        label: "Edit 2",
+        title: "Remove mirror",
+        prompt: "Starting from the current bedroom scene, keep bed, nightstand, dresser, and bench. Remove the wall mirror.",
+        preserve: ["bed", "nightstand", "dresser", "bench"],
+        expected: ["bed", "nightstand", "dresser", "bench"],
+        absent: ["wall mirror"],
+        images: {
+          merged: "static/demo/31_bedroom_gallery_delete_wall_mirror/stage3-merged.png",
+          diag: "static/demo/31_bedroom_gallery_delete_wall_mirror/stage3-diag.png",
+          top: "static/demo/31_bedroom_gallery_delete_wall_mirror/stage3-top.png"
+        }
+      }
+    ]
+  },
+  {
+    id: "36_livingroom_corner_replace_plant_with_side_table",
+    title: "Living Room Plant Replacement",
+    roomType: "Living room",
+    editType: "Replace object",
+    accent: "Plant to side table",
+    quality: "bbox-clear",
+    finalGlb: "static/demo/36_livingroom_corner_replace_plant_with_side_table/final_scene.glb",
+    stageGlbs: [
+      "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage1.glb",
+      "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage2.glb",
+      "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage3.glb"
+    ],
+    stages: [
+      {
+        label: "Create",
+        title: "Base living room",
+        prompt: "Create a simple living room with one sofa, one coffee table, and one TV stand. Keep the layout open and practical.",
+        preserve: [],
+        expected: ["sofa", "coffee table", "tv stand"],
+        absent: [],
+        images: {
+          merged: "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage1-merged.png",
+          diag: "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage1-diag.png",
+          top: "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage1-top.png"
+        }
+      },
+      {
+        label: "Edit 1",
+        title: "Add plant and lamp",
+        prompt: "Starting from the current living room scene, keep sofa, coffee table, and tv stand. Add one potted plant and one floor lamp.",
+        preserve: ["sofa", "coffee table", "tv stand"],
+        expected: ["sofa", "coffee table", "tv stand", "plant", "floor lamp"],
+        absent: [],
+        images: {
+          merged: "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage2-merged.png",
+          diag: "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage2-diag.png",
+          top: "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage2-top.png"
+        }
+      },
+      {
+        label: "Edit 2",
+        title: "Replace plant",
+        prompt: "Starting from the current living room scene, keep sofa, coffee table, tv stand, and floor lamp. Replace the potted plant with a side table.",
+        preserve: ["sofa", "coffee table", "tv stand", "floor lamp"],
+        expected: ["sofa", "coffee table", "tv stand", "side table", "floor lamp"],
+        absent: ["plant"],
+        images: {
+          merged: "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage3-merged.png",
+          diag: "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage3-diag.png",
+          top: "static/demo/36_livingroom_corner_replace_plant_with_side_table/stage3-top.png"
+        }
+      }
+    ]
+  },
+  {
+    id: "44_diningroom_rotate_accent_chair",
+    title: "Dining Room Chair Turn",
+    roomType: "Dining room",
+    editType: "Rotate object",
+    accent: "Chair facing update",
+    quality: "bbox-clear",
+    finalGlb: "static/demo/44_diningroom_rotate_accent_chair/final_scene.glb",
+    stageGlbs: [
+      "static/demo/44_diningroom_rotate_accent_chair/stage1.glb",
+      "static/demo/44_diningroom_rotate_accent_chair/stage2.glb",
+      "static/demo/44_diningroom_rotate_accent_chair/stage3.glb"
+    ],
+    stages: [
+      {
+        label: "Create",
+        title: "Base dining room",
+        prompt: "Create a tidy dining room with one dining table, four chairs, and one sideboard. Keep the room open and practical.",
+        preserve: [],
+        expected: ["dining table", "chair", "sideboard"],
+        absent: [],
+        images: {
+          merged: "static/demo/44_diningroom_rotate_accent_chair/stage1-merged.png",
+          diag: "static/demo/44_diningroom_rotate_accent_chair/stage1-diag.png",
+          top: "static/demo/44_diningroom_rotate_accent_chair/stage1-top.png"
+        }
+      },
+      {
+        label: "Edit 1",
+        title: "Add chair and lamp",
+        prompt: "Starting from the current dining room scene, keep dining table, chairs, and sideboard. Add one accent chair and one floor lamp.",
+        preserve: ["dining table", "chairs", "sideboard"],
+        expected: ["dining table", "chair", "sideboard", "accent chair", "floor lamp"],
+        absent: [],
+        images: {
+          merged: "static/demo/44_diningroom_rotate_accent_chair/stage2-merged.png",
+          diag: "static/demo/44_diningroom_rotate_accent_chair/stage2-diag.png",
+          top: "static/demo/44_diningroom_rotate_accent_chair/stage2-top.png"
+        }
+      },
+      {
+        label: "Edit 2",
+        title: "Rotate chair",
+        prompt: "Starting from the current dining room scene, keep dining table, chairs, sideboard, and floor lamp. Rotate the accent chair to face the dining table.",
+        preserve: ["dining table", "chairs", "sideboard", "floor lamp"],
+        expected: ["dining table", "chair", "sideboard", "accent chair", "floor lamp"],
+        absent: [],
+        images: {
+          merged: "static/demo/44_diningroom_rotate_accent_chair/stage3-merged.png",
+          diag: "static/demo/44_diningroom_rotate_accent_chair/stage3-diag.png",
+          top: "static/demo/44_diningroom_rotate_accent_chair/stage3-top.png"
+        }
+      }
+    ]
+  },
+  {
+    id: "48_study_scale_storage_cabinet",
+    title: "Study Cabinet Scale",
+    roomType: "Study room",
+    editType: "Scale object",
+    accent: "Cabinet enlargement",
+    quality: "bbox-clear",
+    finalGlb: "static/demo/48_study_scale_storage_cabinet/final_scene.glb",
+    stageGlbs: [
+      "static/demo/48_study_scale_storage_cabinet/stage1.glb",
+      "static/demo/48_study_scale_storage_cabinet/stage2.glb",
+      "static/demo/48_study_scale_storage_cabinet/stage3.glb"
+    ],
+    stages: [
+      {
+        label: "Create",
+        title: "Base study",
+        prompt: "Create a modern study room with one desk, one office chair, and one bookshelf. Keep the room open and organized.",
+        preserve: [],
+        expected: ["desk", "office chair", "bookshelf"],
+        absent: [],
+        images: {
+          merged: "static/demo/48_study_scale_storage_cabinet/stage1-merged.png",
+          diag: "static/demo/48_study_scale_storage_cabinet/stage1-diag.png",
+          top: "static/demo/48_study_scale_storage_cabinet/stage1-top.png"
+        }
+      },
+      {
+        label: "Edit 1",
+        title: "Add cabinet and plant",
+        prompt: "Starting from the current study room scene, keep desk, office chair, and bookshelf. Add one storage cabinet and one potted plant.",
+        preserve: ["desk", "office chair", "bookshelf"],
+        expected: ["desk", "office chair", "bookshelf", "storage cabinet", "plant"],
+        absent: [],
+        images: {
+          merged: "static/demo/48_study_scale_storage_cabinet/stage2-merged.png",
+          diag: "static/demo/48_study_scale_storage_cabinet/stage2-diag.png",
+          top: "static/demo/48_study_scale_storage_cabinet/stage2-top.png"
+        }
+      },
+      {
+        label: "Edit 2",
+        title: "Enlarge cabinet",
+        prompt: "Starting from the current study room scene, keep desk, office chair, bookshelf, and plant. Make the storage cabinet about twenty percent larger overall.",
+        preserve: ["desk", "office chair", "bookshelf", "plant"],
+        expected: ["desk", "office chair", "bookshelf", "storage cabinet", "plant"],
+        absent: [],
+        images: {
+          merged: "static/demo/48_study_scale_storage_cabinet/stage3-merged.png",
+          diag: "static/demo/48_study_scale_storage_cabinet/stage3-diag.png",
+          top: "static/demo/48_study_scale_storage_cabinet/stage3-top.png"
+        }
+      }
+    ]
   }
 ];
