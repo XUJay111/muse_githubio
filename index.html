@@ -6,7 +6,7 @@
   <title>MUSE - Agentic 3D Scene Authoring</title>
   <meta name="description" content="MUSE: Agentic 3D Scene Authoring via Memory-Grounded Incremental Requirement Satisfaction">
   <link rel="preload" as="image" href="static/demo/02_livingroom_media_add_bookshelf/stage3-diag.png">
-  <link rel="stylesheet" href="style.css?v=demo14-wide-case-compare-20260611">
+  <link rel="stylesheet" href="style.css?v=demo14-results-tables-skill-20260611">
 </head>
 <body>
   <nav class="nav">
@@ -175,10 +175,16 @@
                   <em data-demo-scene-count></em>
                 </div>
                 <div class="memory-link" aria-hidden="true"></div>
-                <div class="memory-node">
+                <div class="memory-node skill-node">
                   <span>Skill Memory</span>
                   <strong data-demo-skill-memory>Reusable edit pattern</strong>
                   <em data-demo-skill-tag></em>
+                  <div class="skill-mini-flow" aria-hidden="true">
+                    <b>Plan</b>
+                    <b>Apply</b>
+                    <b>Verify</b>
+                  </div>
+                  <small data-demo-skill-type>Add object</small>
                 </div>
               </div>
             </div>
@@ -304,6 +310,72 @@
           </article>
         </div>
 
+        <div class="paper-table-grid" aria-label="Main paper result tables">
+          <article class="paper-table-card construction-table">
+            <div class="paper-table-head">
+              <span>Table 4</span>
+              <h3>Main Construction Results</h3>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Obj.</th>
+                    <th>Rel.</th>
+                    <th>Surf.</th>
+                    <th>Zone</th>
+                    <th>Macro</th>
+                    <th>All-Goal</th>
+                    <th>OOB</th>
+                    <th>Col.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><th>LayoutGPT</th><td>98.4</td><td>83.8</td><td>35.0</td><td>79.0</td><td>74.1</td><td>37.9</td><td>1.4</td><td>2.3</td></tr>
+                  <tr><th>Holodeck</th><td>83.3</td><td>57.6</td><td>21.5</td><td>30.9</td><td>48.3</td><td>14.5</td><td>0.0</td><td>0.0</td></tr>
+                  <tr><th>LayoutVLM</th><td>98.0</td><td>69.7</td><td>22.1</td><td>59.3</td><td>62.3</td><td>26.9</td><td>0.0</td><td>0.0</td></tr>
+                  <tr><th>ReSpace</th><td>71.9</td><td>36.4</td><td>8.6</td><td>32.1</td><td>37.3</td><td>11.0</td><td>0.4</td><td>0.5</td></tr>
+                  <tr><th>SceneReVis</th><td>46.9</td><td>17.2</td><td>9.2</td><td>8.6</td><td>20.5</td><td>2.1</td><td>0.3</td><td>0.9</td></tr>
+                  <tr class="ours-row"><th>MUSE</th><td>99.3</td><td>93.9</td><td>92.6</td><td>82.7</td><td>92.1</td><td>80.7</td><td>0.0</td><td>0.1</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="paper-table-card editing-table">
+            <div class="paper-table-head">
+              <span>Table 5</span>
+              <h3>Main Editing Results</h3>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Obj.</th>
+                    <th>Rel.</th>
+                    <th>Surf.</th>
+                    <th>Macro</th>
+                    <th>All-Goal</th>
+                    <th>PR</th>
+                    <th>UCR</th>
+                    <th>OOB</th>
+                    <th>Col.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><th>LayoutGPT-E</th><td>86.0</td><td>21.1</td><td>19.3</td><td>42.2</td><td>36.2</td><td>25.1</td><td>95.7</td><td>1.8</td><td>5.2</td></tr>
+                  <tr><th>Edit-As-Act</th><td>30.6</td><td>14.1</td><td>5.0</td><td>16.6</td><td>5.4</td><td>84.9</td><td>17.8</td><td>0.0</td><td>0.0</td></tr>
+                  <tr><th>SceneReVis</th><td>33.6</td><td>28.2</td><td>4.2</td><td>22.0</td><td>10.4</td><td>92.6</td><td>5.9</td><td>0.8</td><td>2.1</td></tr>
+                  <tr><th>ReSpace-E</th><td>46.3</td><td>19.7</td><td>5.9</td><td>24.0</td><td>11.2</td><td>100.0</td><td>1.9</td><td>1.2</td><td>3.5</td></tr>
+                  <tr class="ours-row"><th>MUSE</th><td>76.0</td><td>47.9</td><td>83.2</td><td>69.0</td><td>49.6</td><td>99.9</td><td>0.6</td><td>0.1</td><td>0.3</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+
         <figure class="figure-block tradeoff-figure">
           <img src="static/figures/editing-tradeoff.png" alt="Completion-locality trade-off plot">
           <figcaption>
@@ -331,7 +403,7 @@
           <figcaption>Additional construction comparisons under multi-object spatial and support constraints.</figcaption>
         </figure>
 
-        <figure class="figure-block centered-result">
+        <figure class="figure-block">
           <img src="static/figures/qualitative-editing.png" alt="Additional preservation-aware editing examples">
           <figcaption>Additional preservation-aware editing cases with coupled replacement, movement, and insertion.</figcaption>
         </figure>
@@ -366,8 +438,8 @@
       }
     }
   </script>
-  <script src="static/demo-cases.js?v=demo14-wide-case-compare-20260611"></script>
-  <script type="module" src="static/demo-viewer.js?v=demo14-wide-case-compare-20260611"></script>
+  <script src="static/demo-cases.js?v=demo14-results-tables-skill-20260611"></script>
+  <script type="module" src="static/demo-viewer.js?v=demo14-results-tables-skill-20260611"></script>
   <script src="static/animations.js"></script>
   <script>
     const copyButton = document.getElementById('copyBibtex');

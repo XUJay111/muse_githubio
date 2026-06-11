@@ -27,6 +27,7 @@ const els = {
   sceneCount: document.querySelector("[data-demo-scene-count]"),
   skillMemory: document.querySelector("[data-demo-skill-memory]"),
   skillTag: document.querySelector("[data-demo-skill-tag]"),
+  skillType: document.querySelector("[data-demo-skill-type]"),
   imageWrap: document.querySelector("[data-demo-image-wrap]"),
   compareRange: document.querySelector("[data-demo-compare-range]"),
   afterClip: document.querySelector("[data-demo-after-clip]"),
@@ -273,6 +274,9 @@ function renderMemoryTrace(item, stage) {
   els.sceneCount.textContent = preserved > 0 ? `${preserved} preserved objects` : "new room memory";
   els.skillMemory.textContent = skillMap[item.editType] || "Authoring pattern";
   els.skillTag.textContent = item.accent;
+  if (els.skillType) {
+    els.skillType.textContent = item.editType;
+  }
 }
 
 async function loadModel(item, stageIndex) {
