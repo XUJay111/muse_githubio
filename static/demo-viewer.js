@@ -409,17 +409,30 @@ class ProjectPageThreeViewer {
   }
 
   prepareModel(model) {
+    const THREE = this.THREE;
     model.traverse((node) => {
       if (!node.isMesh) return;
-      node.castShadow = true;
+      const nodeName = (node.name || "").toLowerCase();
+      const isWall = nodeName.startsWith("wall_");
+      node.castShadow = !isWall;
       node.receiveShadow = true;
       const materials = Array.isArray(node.material) ? node.material : [node.material];
-      materials.forEach((material) => {
-        if (material && typeof material.envMapIntensity === "number") {
-          material.envMapIntensity = Math.max(material.envMapIntensity, 0.55);
-          material.needsUpdate = true;
+      const preparedMaterials = materials.map((material) => {
+        if (!material) return material;
+        if (isWall) {
+          material = material.clone();
+          material.transparent = true;
+          material.opacity = 0.16;
+          material.depthWrite = false;
+          material.side = THREE.DoubleSide;
         }
+        if (typeof material.envMapIntensity === "number") {
+          material.envMapIntensity = Math.max(material.envMapIntensity, 0.55);
+        }
+        material.needsUpdate = true;
+        return material;
       });
+      node.material = Array.isArray(node.material) ? preparedMaterials : preparedMaterials[0];
     });
   }
 
