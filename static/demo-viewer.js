@@ -17,6 +17,7 @@ const els = {
   caseAccent: document.querySelector("[data-demo-case-accent]"),
   caseScale: document.querySelector("[data-demo-case-scale]"),
   stageTabs: document.querySelector("[data-demo-stage-tabs]"),
+  stageFilmstrip: document.querySelector("[data-demo-stage-filmstrip]"),
   viewTabs: document.querySelector("[data-demo-view-tabs]"),
   title: document.querySelector("[data-demo-title]"),
   meta: document.querySelector("[data-demo-meta]"),
@@ -67,7 +68,14 @@ function setCaseIndex(index) {
   const nextIndex = Math.max(0, Math.min(demoCases.length - 1, Number(index) || 0));
   state.caseIndex = nextIndex;
   state.stageIndex = Math.min(2, currentCase().stages.length - 1);
+  if (state.viewer) state.viewer.enableAutoOrbit();
   if (state.viewer) state.viewer.clearModel();
+  render();
+}
+
+function setStageIndex(index) {
+  state.stageIndex = index;
+  if (state.viewer) state.viewer.enableAutoOrbit();
   render();
 }
 
@@ -197,15 +205,33 @@ function renderStageTabs() {
     button.tabIndex = index === state.stageIndex ? 0 : -1;
     button.textContent = stage.label;
     const activate = (nextIndex) => {
-      state.stageIndex = nextIndex;
-      render();
+      setStageIndex(nextIndex);
     };
-    button.addEventListener("click", () => {
-      state.stageIndex = index;
-      render();
-    });
+    button.addEventListener("click", () => setStageIndex(index));
     button.addEventListener("keydown", (event) => handleTabKey(event, index, currentCase().stages.length, activate));
     els.stageTabs.appendChild(button);
+  });
+}
+
+function renderStageFilmstrip() {
+  if (!els.stageFilmstrip) return;
+  els.stageFilmstrip.innerHTML = "";
+  currentCase().stages.forEach((stage, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "stage-frame";
+    button.dataset.active = String(index === state.stageIndex);
+    button.setAttribute("aria-pressed", String(index === state.stageIndex));
+    button.setAttribute("aria-label", `Show ${stage.label}: ${stage.title}`);
+    button.innerHTML = `
+      <span class="stage-frame-image"><img src="${stage.images.diag}" alt="" loading="lazy"></span>
+      <span class="stage-frame-copy">
+        <strong>${stage.label}</strong>
+        <em>${stage.title}</em>
+      </span>
+    `;
+    button.addEventListener("click", () => setStageIndex(index));
+    els.stageFilmstrip.appendChild(button);
   });
 }
 
@@ -307,6 +333,7 @@ function render() {
   renderCaseButtons();
   renderCaseSelect();
   renderStageTabs();
+  renderStageFilmstrip();
   renderViewTabs();
 
   els.title.textContent = item.title;
@@ -344,6 +371,7 @@ class ProjectPageThreeViewer {
     this.loadToken = 0;
     this.animationId = 0;
     this.resizeObserver = null;
+    this.autoOrbit = true;
   }
 
   async init() {
@@ -385,9 +413,12 @@ class ProjectPageThreeViewer {
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.055;
     this.controls.maxPolarAngle = Math.PI / 2 + 0.08;
+    this.controls.autoRotate = false;
+    this.controls.addEventListener("start", () => this.disableAutoOrbit());
 
     this.loader = new GLTFLoader();
     this.addLights();
+    this.bindInteractionGuards();
 
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(this.container);
@@ -437,7 +468,8 @@ class ProjectPageThreeViewer {
         this.prepareModel(this.currentModel);
         this.scene.add(this.currentModel);
         this.frameModel();
-        this.setState("loaded", "3D scene loaded", 100, `${displayName} loaded. Drag to orbit / scroll to zoom`);
+        this.enableAutoOrbit();
+        this.setState("loaded", "3D scene loaded", 100, `${displayName} loaded. Auto orbit is on; drag to take control.`);
       },
       (event) => {
         if (token !== this.loadToken || url !== this.currentUrl) return;
@@ -514,6 +546,24 @@ class ProjectPageThreeViewer {
     this.controls.update();
   }
 
+  bindInteractionGuards() {
+    const stopAutoOrbit = () => this.disableAutoOrbit();
+    this.container.addEventListener("pointerdown", stopAutoOrbit, { passive: true });
+    this.container.addEventListener("wheel", stopAutoOrbit, { passive: true });
+    this.container.addEventListener("keydown", stopAutoOrbit);
+  }
+
+  enableAutoOrbit() {
+    this.autoOrbit = true;
+    if (this.hintElement) this.hintElement.textContent = "Auto orbit is on; drag to take control.";
+  }
+
+  disableAutoOrbit() {
+    if (!this.autoOrbit) return;
+    this.autoOrbit = false;
+    if (this.hintElement) this.hintElement.textContent = "Manual orbit mode. Drag to orbit / scroll to zoom.";
+  }
+
   cacheBustedUrl(url) {
     const separator = url.includes("?") ? "&" : "?";
     return `${url}${separator}v=${encodeURIComponent(url)}`;
@@ -563,6 +613,12 @@ class ProjectPageThreeViewer {
 
   animate() {
     this.animationId = requestAnimationFrame(() => this.animate());
+    if (this.autoOrbit && this.currentModel && this.controls) {
+      this.controls.autoRotate = true;
+      this.controls.autoRotateSpeed = 0.55;
+    } else if (this.controls) {
+      this.controls.autoRotate = false;
+    }
     if (this.controls) this.controls.update();
     if (this.renderer && this.scene && this.camera) {
       this.renderer.render(this.scene, this.camera);
