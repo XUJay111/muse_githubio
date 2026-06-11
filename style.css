@@ -1503,11 +1503,11 @@ figcaption {
 
 .imaginarium-viewer-meta {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  min-height: 58px;
-  padding: 12px 14px;
+  min-height: 94px;
+  padding: 18px 22px 16px;
   border-bottom: 1px solid rgba(37, 99, 235, 0.12);
 }
 
@@ -1526,21 +1526,35 @@ figcaption {
   text-transform: uppercase;
 }
 
+.imaginarium-viewer-meta span {
+  margin-bottom: 10px;
+}
+
 .imaginarium-viewer-meta strong {
   display: block;
   overflow: hidden;
   color: var(--heading);
-  font-size: 1rem;
-  line-height: 1.25;
+  font-size: 1.28rem;
+  line-height: 1.18;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.imaginarium-viewer-meta em {
+  margin-top: 12px;
+  color: #5b6b82;
+  letter-spacing: 0;
+}
+
 .imaginarium-model {
+  width: min(920px, 100%);
   aspect-ratio: 16 / 8.2;
   min-height: 360px;
   max-height: none;
+  margin: 0 auto;
   border: 0;
+  border-left: 1px solid rgba(219, 229, 240, 0.75);
+  border-right: 1px solid rgba(219, 229, 240, 0.75);
   border-radius: 0;
   box-shadow: none;
 }
