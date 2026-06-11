@@ -6,7 +6,7 @@
   <title>MUSE - Agentic 3D Scene Authoring</title>
   <meta name="description" content="MUSE: Agentic 3D Scene Authoring via Memory-Grounded Incremental Requirement Satisfaction">
   <link rel="preload" as="image" href="static/demo/02_livingroom_media_add_bookshelf/stage3-diag.png">
-  <link rel="stylesheet" href="style.css?v=demo14-nav-polish-20260611">
+  <link rel="stylesheet" href="style.css?v=demo14-checklist-nav-20260611">
 </head>
 <body>
   <nav class="nav">
@@ -88,24 +88,8 @@
               <span>AuthorBench chains</span>
               <strong data-demo-case-count>14 cases</strong>
             </div>
-            <div class="case-scrubber">
-              <div class="case-current">
-                <span data-demo-case-number>01</span>
-                <strong data-demo-case-name>Living Room Media Wall</strong>
-                <em data-demo-case-accent>Bookshelf insertion</em>
-              </div>
-              <input class="case-slider" type="range" min="1" max="14" value="1" step="1" data-demo-case-slider aria-label="Select demo case">
-              <div class="case-scale" data-demo-case-scale aria-hidden="true"></div>
-            </div>
             <select class="case-select" data-demo-case-select aria-label="Select demo case"></select>
             <div class="case-list" data-demo-case-list></div>
-            <div class="case-preview">
-              <img data-demo-case-preview-image src="static/demo/02_livingroom_media_add_bookshelf/stage3-diag.png" alt="" loading="lazy">
-              <div>
-                <span data-demo-case-meta>Living room / Add object</span>
-                <strong data-demo-case-stage>Final verified scene</strong>
-              </div>
-            </div>
           </aside>
 
           <div class="demo-workspace">
@@ -117,7 +101,6 @@
               <span class="status-chip success">Verified stages</span>
             </div>
 
-            <div class="tab-row" data-demo-stage-tabs role="tablist" aria-label="Stage selector"></div>
             <div class="stage-filmstrip" data-demo-stage-filmstrip aria-label="Stage timeline"></div>
 
             <div class="prompt-panel">
@@ -372,8 +355,8 @@
       }
     }
   </script>
-  <script src="static/demo-cases.js?v=demo14-nav-polish-20260611"></script>
-  <script type="module" src="static/demo-viewer.js?v=demo14-nav-polish-20260611"></script>
+  <script src="static/demo-cases.js?v=demo14-checklist-nav-20260611"></script>
+  <script type="module" src="static/demo-viewer.js?v=demo14-checklist-nav-20260611"></script>
   <script src="static/animations.js"></script>
   <script>
     const copyButton = document.getElementById('copyBibtex');

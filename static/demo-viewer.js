@@ -11,15 +11,6 @@ const els = {
   caseList: document.querySelector("[data-demo-case-list]"),
   caseCount: document.querySelector("[data-demo-case-count]"),
   caseSelect: document.querySelector("[data-demo-case-select]"),
-  caseSlider: document.querySelector("[data-demo-case-slider]"),
-  caseNumber: document.querySelector("[data-demo-case-number]"),
-  caseName: document.querySelector("[data-demo-case-name]"),
-  caseAccent: document.querySelector("[data-demo-case-accent]"),
-  caseScale: document.querySelector("[data-demo-case-scale]"),
-  casePreviewImage: document.querySelector("[data-demo-case-preview-image]"),
-  caseMeta: document.querySelector("[data-demo-case-meta]"),
-  caseStage: document.querySelector("[data-demo-case-stage]"),
-  stageTabs: document.querySelector("[data-demo-stage-tabs]"),
   stageFilmstrip: document.querySelector("[data-demo-stage-filmstrip]"),
   viewTabs: document.querySelector("[data-demo-view-tabs]"),
   title: document.querySelector("[data-demo-title]"),
@@ -102,40 +93,11 @@ function renderPills(container, values, emptyText) {
 
 function renderCaseButtons() {
   if (els.caseList) els.caseList.innerHTML = "";
-  if (els.caseScale) els.caseScale.innerHTML = "";
-  const item = currentCase();
-  const finalStage = item.stages[item.stages.length - 1];
   if (els.caseCount) {
     els.caseCount.textContent = `${demoCases.length} cases`;
   }
-  if (els.caseNumber) {
-    els.caseNumber.textContent = String(state.caseIndex + 1).padStart(2, "0");
-  }
-  if (els.caseName) {
-    els.caseName.textContent = item.title;
-  }
-  if (els.caseAccent) {
-    els.caseAccent.textContent = item.accent;
-  }
-  if (els.caseSlider) {
-    els.caseSlider.min = "1";
-    els.caseSlider.max = String(demoCases.length);
-    els.caseSlider.value = String(state.caseIndex + 1);
-    const progress = demoCases.length > 1 ? (state.caseIndex / (demoCases.length - 1)) * 100 : 0;
-    els.caseSlider.style.setProperty("--case-slider-progress", `${progress}%`);
-    els.caseSlider.setAttribute("aria-valuetext", `${state.caseIndex + 1} of ${demoCases.length}: ${item.title}`);
-  }
-  if (els.casePreviewImage && finalStage) {
-    els.casePreviewImage.src = finalStage.images.diag;
-    els.casePreviewImage.alt = `${item.title} final preview`;
-  }
-  if (els.caseMeta) {
-    els.caseMeta.textContent = `${roomLabel(item.roomType)} / ${item.editType}`;
-  }
-  if (els.caseStage && finalStage) {
-    els.caseStage.textContent = `${finalStage.label}: ${finalStage.title}`;
-  }
   demoCases.forEach((item, index) => {
+    const finalStage = item.stages[item.stages.length - 1];
     const button = document.createElement("button");
     button.type = "button";
     button.className = "case-card";
@@ -144,16 +106,16 @@ function renderCaseButtons() {
     button.setAttribute("aria-label", `Open case ${index + 1}: ${item.title}`);
     button.title = `${String(index + 1).padStart(2, "0")} - ${item.title}`;
     button.innerHTML = `
-      <span>${String(index + 1).padStart(2, "0")}</span>
-      <strong>${item.title}</strong>
+      <span class="case-check" aria-hidden="true"></span>
+      <span class="case-index">${String(index + 1).padStart(2, "0")}</span>
+      <span class="case-copy">
+        <strong>${item.title}</strong>
+        <em>${roomLabel(item.roomType)} / ${item.editType}</em>
+        <small>${finalStage.label}: ${finalStage.title}</small>
+      </span>
     `;
     button.addEventListener("click", () => setCaseIndex(index));
     if (els.caseList) els.caseList.appendChild(button);
-
-    const tick = document.createElement("span");
-    tick.dataset.active = String(index === state.caseIndex);
-    tick.textContent = String(index + 1).padStart(2, "0");
-    if (els.caseScale) els.caseScale.appendChild(tick);
   });
 }
 
@@ -172,16 +134,6 @@ function renderCaseSelect() {
 if (els.caseSelect) {
   els.caseSelect.addEventListener("change", () => {
     setCaseIndex(Number(els.caseSelect.value));
-  });
-}
-
-if (els.caseSlider) {
-  els.caseSlider.addEventListener("input", () => {
-    setCaseIndex(Number(els.caseSlider.value) - 1);
-  });
-
-  els.caseSlider.addEventListener("change", () => {
-    setCaseIndex(Number(els.caseSlider.value) - 1);
   });
 }
 
@@ -208,26 +160,6 @@ function handleTabKey(event, index, count, activate) {
   if (!(event.key in keyMap)) return;
   event.preventDefault();
   activate((index + keyMap[event.key] + count) % count);
-}
-
-function renderStageTabs() {
-  els.stageTabs.innerHTML = "";
-  currentCase().stages.forEach((stage, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "demo-tab";
-    button.dataset.active = String(index === state.stageIndex);
-    button.setAttribute("role", "tab");
-    button.setAttribute("aria-selected", String(index === state.stageIndex));
-    button.tabIndex = index === state.stageIndex ? 0 : -1;
-    button.textContent = stage.label;
-    const activate = (nextIndex) => {
-      setStageIndex(nextIndex);
-    };
-    button.addEventListener("click", () => setStageIndex(index));
-    button.addEventListener("keydown", (event) => handleTabKey(event, index, currentCase().stages.length, activate));
-    els.stageTabs.appendChild(button);
-  });
 }
 
 function renderStageFilmstrip() {
@@ -349,7 +281,6 @@ function render() {
 
   renderCaseButtons();
   renderCaseSelect();
-  renderStageTabs();
   renderStageFilmstrip();
   renderViewTabs();
 
