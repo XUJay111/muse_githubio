@@ -6,7 +6,7 @@
   <title>MUSE - Agentic 3D Scene Authoring</title>
   <meta name="description" content="MUSE: Agentic 3D Scene Authoring via Memory-Grounded Incremental Requirement Satisfaction">
   <link rel="preload" as="image" href="static/demo/02_livingroom_media_add_bookshelf/stage3-diag.png">
-  <link rel="stylesheet" href="style.css?v=demo14-fill-scroll-rail-20260611">
+  <link rel="stylesheet" href="style.css?v=demo14-wide-case-compare-20260611">
 </head>
 <body>
   <nav class="nav">
@@ -110,11 +110,22 @@
 
             <div class="media-toolbar">
               <div class="tab-row compact" data-demo-view-tabs role="tablist" aria-label="Render view selector"></div>
-              <span>Render views</span>
+              <span>Compare views</span>
             </div>
 
             <div class="demo-media" data-demo-image-wrap>
-              <img data-demo-image src="" alt="" loading="lazy">
+              <div class="before-after" data-demo-compare>
+                <img class="compare-image compare-before" data-demo-before-image src="" alt="" loading="lazy">
+                <div class="compare-after" data-demo-after-clip>
+                  <img class="compare-image" data-demo-after-image src="" alt="" loading="lazy">
+                </div>
+                <div class="compare-divider" data-demo-compare-divider aria-hidden="true"><span></span></div>
+                <div class="compare-labels">
+                  <span data-demo-before-label>Before</span>
+                  <span data-demo-after-label>After</span>
+                </div>
+                <input class="compare-range" type="range" min="0" max="100" value="50" data-demo-compare-range aria-label="Before and after comparison slider">
+              </div>
             </div>
             <div class="demo-model" data-demo-model-wrap hidden>
               <div class="model-overlay" data-demo-model-overlay data-state="idle">
@@ -355,8 +366,8 @@
       }
     }
   </script>
-  <script src="static/demo-cases.js?v=demo14-fill-scroll-rail-20260611"></script>
-  <script type="module" src="static/demo-viewer.js?v=demo14-fill-scroll-rail-20260611"></script>
+  <script src="static/demo-cases.js?v=demo14-wide-case-compare-20260611"></script>
+  <script type="module" src="static/demo-viewer.js?v=demo14-wide-case-compare-20260611"></script>
   <script src="static/animations.js"></script>
   <script>
     const copyButton = document.getElementById('copyBibtex');

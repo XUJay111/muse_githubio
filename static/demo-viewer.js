@@ -3,7 +3,7 @@ const demoCases = window.MUSE_DEMO_CASES || [];
 const state = {
   caseIndex: 0,
   stageIndex: 2,
-  view: "diag",
+  view: "perspectiveCompare",
   viewer: null
 };
 
@@ -27,8 +27,14 @@ const els = {
   sceneCount: document.querySelector("[data-demo-scene-count]"),
   skillMemory: document.querySelector("[data-demo-skill-memory]"),
   skillTag: document.querySelector("[data-demo-skill-tag]"),
-  image: document.querySelector("[data-demo-image]"),
   imageWrap: document.querySelector("[data-demo-image-wrap]"),
+  compareRange: document.querySelector("[data-demo-compare-range]"),
+  afterClip: document.querySelector("[data-demo-after-clip]"),
+  compareDivider: document.querySelector("[data-demo-compare-divider]"),
+  beforeImage: document.querySelector("[data-demo-before-image]"),
+  afterImage: document.querySelector("[data-demo-after-image]"),
+  beforeLabel: document.querySelector("[data-demo-before-label]"),
+  afterLabel: document.querySelector("[data-demo-after-label]"),
   modelWrap: document.querySelector("[data-demo-model-wrap]"),
   model: document.querySelector("[data-demo-model]"),
   modelOverlay: document.querySelector("[data-demo-model-overlay]"),
@@ -40,9 +46,8 @@ const els = {
 };
 
 const viewOptions = [
-  { id: "diag", label: "Perspective" },
-  { id: "merged", label: "Comparison" },
-  { id: "top", label: "Top" },
+  { id: "perspectiveCompare", label: "Perspective Compare", imageKey: "diag" },
+  { id: "topCompare", label: "Top Compare", imageKey: "top" },
   { id: "model", label: "3D View" }
 ];
 
@@ -137,6 +142,12 @@ if (els.caseSelect) {
   });
 }
 
+if (els.compareRange) {
+  els.compareRange.addEventListener("input", () => {
+    updateCompareSplit(Number(els.compareRange.value));
+  });
+}
+
 function handleTabKey(event, index, count, activate) {
   const keyMap = {
     ArrowRight: 1,
@@ -214,6 +225,7 @@ function renderMedia() {
   const item = currentCase();
   const stage = currentStage();
   const isModel = state.view === "model";
+  const view = viewOptions.find((option) => option.id === state.view) || viewOptions[0];
 
   els.imageWrap.hidden = isModel;
   els.modelWrap.hidden = !isModel;
@@ -223,8 +235,23 @@ function renderMedia() {
     return;
   }
 
-  els.image.src = stage.images[state.view];
-  els.image.alt = `${item.title} ${stage.label} ${state.view} render`;
+  const beforeStageIndex = Math.max(0, state.stageIndex - 1);
+  const beforeStage = currentCase().stages[beforeStageIndex];
+  const imageKey = view.imageKey || "diag";
+  els.beforeImage.src = beforeStage.images[imageKey];
+  els.afterImage.src = stage.images[imageKey];
+  els.beforeImage.alt = `${item.title} ${beforeStage.label} ${imageKey} render`;
+  els.afterImage.alt = `${item.title} ${stage.label} ${imageKey} render`;
+  els.beforeLabel.textContent = beforeStageIndex === state.stageIndex ? stage.label : beforeStage.label;
+  els.afterLabel.textContent = stage.label;
+  updateCompareSplit(Number(els.compareRange?.value || 50));
+}
+
+function updateCompareSplit(value) {
+  const split = Math.max(0, Math.min(100, Number.isFinite(value) ? value : 50));
+  if (els.afterClip) els.afterClip.style.clipPath = `inset(0 0 0 ${split}%)`;
+  if (els.compareDivider) els.compareDivider.style.left = `${split}%`;
+  if (els.compareRange) els.compareRange.value = String(split);
 }
 
 function renderMemoryTrace(item, stage) {
