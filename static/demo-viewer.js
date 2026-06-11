@@ -11,6 +11,11 @@ const els = {
   caseList: document.querySelector("[data-demo-case-list]"),
   caseCount: document.querySelector("[data-demo-case-count]"),
   caseSelect: document.querySelector("[data-demo-case-select]"),
+  caseSlider: document.querySelector("[data-demo-case-slider]"),
+  caseNumber: document.querySelector("[data-demo-case-number]"),
+  caseName: document.querySelector("[data-demo-case-name]"),
+  caseAccent: document.querySelector("[data-demo-case-accent]"),
+  caseScale: document.querySelector("[data-demo-case-scale]"),
   stageTabs: document.querySelector("[data-demo-stage-tabs]"),
   viewTabs: document.querySelector("[data-demo-view-tabs]"),
   title: document.querySelector("[data-demo-title]"),
@@ -58,6 +63,14 @@ function roomLabel(roomType) {
   return roomType.replace(/_/g, " ");
 }
 
+function setCaseIndex(index) {
+  const nextIndex = Math.max(0, Math.min(demoCases.length - 1, Number(index) || 0));
+  state.caseIndex = nextIndex;
+  state.stageIndex = Math.min(2, currentCase().stages.length - 1);
+  if (state.viewer) state.viewer.clearModel();
+  render();
+}
+
 function renderPills(container, values, emptyText) {
   container.innerHTML = "";
   if (!values || values.length === 0) {
@@ -77,9 +90,26 @@ function renderPills(container, values, emptyText) {
 }
 
 function renderCaseButtons() {
-  els.caseList.innerHTML = "";
+  if (els.caseList) els.caseList.innerHTML = "";
+  if (els.caseScale) els.caseScale.innerHTML = "";
+  const item = currentCase();
   if (els.caseCount) {
     els.caseCount.textContent = `${demoCases.length} cases`;
+  }
+  if (els.caseNumber) {
+    els.caseNumber.textContent = String(state.caseIndex + 1).padStart(2, "0");
+  }
+  if (els.caseName) {
+    els.caseName.textContent = item.title;
+  }
+  if (els.caseAccent) {
+    els.caseAccent.textContent = item.accent;
+  }
+  if (els.caseSlider) {
+    els.caseSlider.min = "1";
+    els.caseSlider.max = String(demoCases.length);
+    els.caseSlider.value = String(state.caseIndex + 1);
+    els.caseSlider.setAttribute("aria-valuetext", `${state.caseIndex + 1} of ${demoCases.length}: ${item.title}`);
   }
   demoCases.forEach((item, index) => {
     const button = document.createElement("button");
@@ -87,22 +117,23 @@ function renderCaseButtons() {
     button.className = "case-card";
     button.dataset.active = String(index === state.caseIndex);
     button.setAttribute("aria-pressed", String(index === state.caseIndex));
+    button.setAttribute("aria-label", `Open case ${index + 1}: ${item.title}`);
+    button.title = `${String(index + 1).padStart(2, "0")} - ${item.title}`;
     button.innerHTML = `
       <span>${String(index + 1).padStart(2, "0")}</span>
-      <strong>${item.title}</strong>
-      <em>${item.accent}</em>
     `;
-    button.addEventListener("click", () => {
-      state.caseIndex = index;
-      state.stageIndex = 2;
-      if (state.viewer) state.viewer.clearModel();
-      render();
-    });
-    els.caseList.appendChild(button);
+    button.addEventListener("click", () => setCaseIndex(index));
+    if (els.caseList) els.caseList.appendChild(button);
+
+    const tick = document.createElement("span");
+    tick.dataset.active = String(index === state.caseIndex);
+    tick.textContent = String(index + 1).padStart(2, "0");
+    if (els.caseScale) els.caseScale.appendChild(tick);
   });
 }
 
 function renderCaseSelect() {
+  if (!els.caseSelect) return;
   els.caseSelect.innerHTML = "";
   demoCases.forEach((item, index) => {
     const option = document.createElement("option");
@@ -113,12 +144,21 @@ function renderCaseSelect() {
   els.caseSelect.value = String(state.caseIndex);
 }
 
-els.caseSelect.addEventListener("change", () => {
-  state.caseIndex = Number(els.caseSelect.value);
-  state.stageIndex = 2;
-  if (state.viewer) state.viewer.clearModel();
-  render();
-});
+if (els.caseSelect) {
+  els.caseSelect.addEventListener("change", () => {
+    setCaseIndex(Number(els.caseSelect.value));
+  });
+}
+
+if (els.caseSlider) {
+  els.caseSlider.addEventListener("input", () => {
+    setCaseIndex(Number(els.caseSlider.value) - 1);
+  });
+
+  els.caseSlider.addEventListener("change", () => {
+    setCaseIndex(Number(els.caseSlider.value) - 1);
+  });
+}
 
 function handleTabKey(event, index, count, activate) {
   const keyMap = {
