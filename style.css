@@ -497,8 +497,8 @@ sup {
 
 .demo-shell {
   display: grid;
-  grid-template-columns: 292px minmax(0, 1fr);
-  min-height: 660px;
+  grid-template-columns: 300px minmax(0, 1fr);
+  min-height: 600px;
 }
 
 .case-rail {
@@ -529,11 +529,31 @@ sup {
 
 .case-list {
   display: grid;
-  gap: 6px;
-  max-height: 594px;
+  gap: 5px;
+  max-height: 520px;
   overflow-y: auto;
-  padding-right: 3px;
-  scrollbar-width: thin;
+  padding: 2px 6px 2px 0;
+  scrollbar-color: #8eb8ee #dce9f8;
+  scrollbar-width: auto;
+}
+
+.case-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.case-list::-webkit-scrollbar-track {
+  background: #dce9f8;
+  border-radius: 999px;
+}
+
+.case-list::-webkit-scrollbar-thumb {
+  background: #8eb8ee;
+  border: 2px solid #dce9f8;
+  border-radius: 999px;
+}
+
+.case-list::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
 
 .case-select {
@@ -551,11 +571,11 @@ sup {
 
 .case-card {
   width: 100%;
-  min-height: 45px;
-  padding: 6px 8px;
+  min-height: 41px;
+  padding: 5px 8px;
   display: grid;
-  grid-template-columns: 18px 28px minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: 16px 26px minmax(0, 1fr);
+  gap: 7px;
   align-items: center;
   color: var(--secondary);
   text-align: left;
@@ -574,8 +594,8 @@ sup {
 }
 
 .case-check {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   border: 2px solid #bfd1e8;
   border-radius: 999px;
   background: #ffffff;
@@ -591,10 +611,10 @@ sup {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  min-height: 28px;
+  width: 26px;
+  min-height: 26px;
   color: var(--accent);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 850;
   background: #eef5ff;
   border-radius: 6px;
@@ -610,7 +630,7 @@ sup {
   min-width: 0;
   overflow: hidden;
   color: var(--heading);
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 820;
   line-height: 1.1;
   text-overflow: ellipsis;
@@ -622,7 +642,7 @@ sup {
   min-width: 0;
   overflow: hidden;
   color: var(--secondary);
-  font-size: 0.66rem;
+  font-size: 0.64rem;
   font-style: normal;
   font-weight: 680;
   line-height: 1.1;
@@ -706,15 +726,15 @@ sup {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
 .stage-frame {
   min-width: 0;
-  min-height: 76px;
+  min-height: 66px;
   padding: 6px;
   display: grid;
-  grid-template-columns: 78px minmax(0, 1fr);
+  grid-template-columns: 70px minmax(0, 1fr);
   gap: 8px;
   align-items: center;
   color: var(--secondary);
@@ -742,7 +762,7 @@ sup {
 
 .stage-frame-image {
   display: block;
-  width: 78px;
+  width: 70px;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background: #eef4fb;
@@ -780,8 +800,8 @@ sup {
 }
 
 .prompt-panel {
-  margin: 12px 0;
-  padding: 12px 14px;
+  margin: 10px 0;
+  padding: 10px 12px;
   color: var(--body);
   background: #f7fbff;
   border: 1px solid #dbe8f6;
@@ -798,8 +818,8 @@ sup {
 
 .prompt-panel p {
   margin: 0;
-  font-size: 0.86rem;
-  line-height: 1.45;
+  font-size: 0.84rem;
+  line-height: 1.38;
 }
 
 .media-toolbar {
@@ -822,8 +842,9 @@ sup {
 .demo-model {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9.4;
-  min-height: 300px;
+  aspect-ratio: 16 / 8.2;
+  min-height: 240px;
+  max-height: 430px;
   overflow: hidden;
   background: #f3f7fc;
   border: 1px solid #dbe7f4;
@@ -1391,7 +1412,7 @@ figcaption {
   }
 
   .case-list {
-    max-height: 420px;
+    max-height: 360px;
   }
 
   .split,
@@ -1446,21 +1467,21 @@ figcaption {
 
   .case-list {
     display: grid;
-    max-height: 360px;
+    max-height: 320px;
     overflow-x: hidden;
     scrollbar-width: thin;
   }
 
   .case-card {
-    min-height: 48px;
+    min-height: 42px;
   }
 
   .stage-frame {
-    grid-template-columns: 96px minmax(0, 1fr);
+    grid-template-columns: 82px minmax(0, 1fr);
   }
 
   .stage-frame-image {
-    width: 96px;
+    width: 82px;
   }
 
   .actions {
@@ -1501,8 +1522,8 @@ figcaption {
 
   .demo-media,
   .demo-model {
-    min-height: 240px;
-    aspect-ratio: 4 / 3;
+    min-height: 210px;
+    aspect-ratio: 16 / 10;
   }
 
   .narrow p {
