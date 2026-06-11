@@ -615,6 +615,8 @@ class ProjectPageThreeViewer {
   }
 }
 
+window.ProjectPageThreeViewer = ProjectPageThreeViewer;
+
 if (demoCases.length > 0) {
   render();
 }

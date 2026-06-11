@@ -6,7 +6,7 @@
   <title>MUSE - Agentic 3D Scene Authoring</title>
   <meta name="description" content="MUSE: Agentic 3D Scene Authoring via Memory-Grounded Incremental Requirement Satisfaction">
   <link rel="preload" as="image" href="static/demo/02_livingroom_media_add_bookshelf/stage3-diag.png">
-  <link rel="stylesheet" href="style.css?v=demo14-memory-tables-stack-20260611">
+  <link rel="stylesheet" href="style.css?v=demo15-imaginarium-gallery-20260611">
 </head>
 <body>
   <nav class="nav">
@@ -415,6 +415,44 @@
           <img src="static/figures/qualitative-editing.png" alt="Additional preservation-aware editing examples">
           <figcaption>Additional preservation-aware editing cases with coupled replacement, movement, and insertion.</figcaption>
         </figure>
+
+        <section class="imaginarium-gallery" aria-labelledby="imaginarium-gallery-title" data-imaginarium-gallery>
+          <div class="imaginarium-gallery-head">
+            <div>
+              <h3 id="imaginarium-gallery-title">Imaginarium Scene Gallery</h3>
+              <p>Interactive 3D previews for representative real-scene room types.</p>
+            </div>
+            <span data-imaginarium-count>6 scenes</span>
+          </div>
+
+          <div class="imaginarium-viewer-shell">
+            <div class="imaginarium-viewer-meta">
+              <div>
+                <span>Selected scene</span>
+                <strong data-imaginarium-title>Bedroom</strong>
+                <em data-imaginarium-meta>bedroom_34 / 27 objects</em>
+              </div>
+              <span class="status-chip success">Auto orbit</span>
+            </div>
+
+            <div class="demo-model imaginarium-model">
+              <div class="model-overlay" data-imaginarium-model-overlay data-state="idle">
+                <div class="model-status-row">
+                  <span class="model-state-dot" aria-hidden="true"></span>
+                  <span class="model-status" data-imaginarium-model-status>3D scene ready to load</span>
+                  <strong data-imaginarium-model-progress-text></strong>
+                </div>
+                <div class="model-progress" role="progressbar" aria-label="Imaginarium 3D scene loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-imaginarium-model-progress>
+                  <span data-imaginarium-model-progress-bar></span>
+                </div>
+                <p class="model-hint" data-imaginarium-model-hint>Scroll here to load; auto orbit starts after loading.</p>
+              </div>
+              <div class="model-canvas" data-imaginarium-model></div>
+            </div>
+          </div>
+
+          <div class="imaginarium-thumb-strip" data-imaginarium-thumbs aria-label="Select Imaginarium scene"></div>
+        </section>
       </div>
     </section>
 
@@ -447,7 +485,8 @@
     }
   </script>
   <script src="static/demo-cases.js?v=demo14-memory-tables-stack-20260611"></script>
-  <script type="module" src="static/demo-viewer.js?v=demo14-memory-tables-stack-20260611"></script>
+  <script type="module" src="static/demo-viewer.js?v=demo15-imaginarium-gallery-20260611"></script>
+  <script type="module" src="static/imaginarium-gallery.js?v=demo15-imaginarium-gallery-20260611"></script>
   <script src="static/animations.js"></script>
   <script>
     const copyButton = document.getElementById('copyBibtex');
