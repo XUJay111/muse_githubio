@@ -16,6 +16,9 @@ const els = {
   caseName: document.querySelector("[data-demo-case-name]"),
   caseAccent: document.querySelector("[data-demo-case-accent]"),
   caseScale: document.querySelector("[data-demo-case-scale]"),
+  casePreviewImage: document.querySelector("[data-demo-case-preview-image]"),
+  caseMeta: document.querySelector("[data-demo-case-meta]"),
+  caseStage: document.querySelector("[data-demo-case-stage]"),
   stageTabs: document.querySelector("[data-demo-stage-tabs]"),
   stageFilmstrip: document.querySelector("[data-demo-stage-filmstrip]"),
   viewTabs: document.querySelector("[data-demo-view-tabs]"),
@@ -101,6 +104,7 @@ function renderCaseButtons() {
   if (els.caseList) els.caseList.innerHTML = "";
   if (els.caseScale) els.caseScale.innerHTML = "";
   const item = currentCase();
+  const finalStage = item.stages[item.stages.length - 1];
   if (els.caseCount) {
     els.caseCount.textContent = `${demoCases.length} cases`;
   }
@@ -117,7 +121,19 @@ function renderCaseButtons() {
     els.caseSlider.min = "1";
     els.caseSlider.max = String(demoCases.length);
     els.caseSlider.value = String(state.caseIndex + 1);
+    const progress = demoCases.length > 1 ? (state.caseIndex / (demoCases.length - 1)) * 100 : 0;
+    els.caseSlider.style.setProperty("--case-slider-progress", `${progress}%`);
     els.caseSlider.setAttribute("aria-valuetext", `${state.caseIndex + 1} of ${demoCases.length}: ${item.title}`);
+  }
+  if (els.casePreviewImage && finalStage) {
+    els.casePreviewImage.src = finalStage.images.diag;
+    els.casePreviewImage.alt = `${item.title} final preview`;
+  }
+  if (els.caseMeta) {
+    els.caseMeta.textContent = `${roomLabel(item.roomType)} / ${item.editType}`;
+  }
+  if (els.caseStage && finalStage) {
+    els.caseStage.textContent = `${finalStage.label}: ${finalStage.title}`;
   }
   demoCases.forEach((item, index) => {
     const button = document.createElement("button");
@@ -129,6 +145,7 @@ function renderCaseButtons() {
     button.title = `${String(index + 1).padStart(2, "0")} - ${item.title}`;
     button.innerHTML = `
       <span>${String(index + 1).padStart(2, "0")}</span>
+      <strong>${item.title}</strong>
     `;
     button.addEventListener("click", () => setCaseIndex(index));
     if (els.caseList) els.caseList.appendChild(button);
