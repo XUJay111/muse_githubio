@@ -6,7 +6,7 @@
   <title>MUSE - Agentic 3D Scene Authoring</title>
   <meta name="description" content="MUSE: Agentic 3D Scene Authoring via Memory-Grounded Incremental Requirement Satisfaction">
   <link rel="preload" as="image" href="static/demo/02_livingroom_media_add_bookshelf/stage3-diag.png">
-  <link rel="stylesheet" href="style.css?v=demo14-results-tables-skill-20260611">
+  <link rel="stylesheet" href="style.css?v=demo14-memory-tables-stack-20260611">
 </head>
 <body>
   <nav class="nav">
@@ -163,16 +163,26 @@
                 <strong data-demo-memory-status>BBox-clear case</strong>
               </div>
               <div class="memory-flow">
-                <div class="memory-node">
+                <div class="memory-node working-node">
                   <span>Working Memory</span>
                   <strong data-demo-working-memory>Stage goals tracked</strong>
                   <em data-demo-working-count></em>
+                  <div class="memory-mini-flow" aria-hidden="true">
+                    <b>Goals</b>
+                    <b>Checks</b>
+                    <b>Issues</b>
+                  </div>
                 </div>
                 <div class="memory-link" aria-hidden="true"></div>
-                <div class="memory-node">
+                <div class="memory-node scene-node">
                   <span>Scene Memory</span>
                   <strong data-demo-scene-memory>Preserved bindings</strong>
                   <em data-demo-scene-count></em>
+                  <div class="memory-mini-flow" aria-hidden="true">
+                    <b>Bind</b>
+                    <b>Protect</b>
+                    <b>Reuse</b>
+                  </div>
                 </div>
                 <div class="memory-link" aria-hidden="true"></div>
                 <div class="memory-node skill-node">
@@ -313,7 +323,6 @@
         <div class="paper-table-grid" aria-label="Main paper result tables">
           <article class="paper-table-card construction-table">
             <div class="paper-table-head">
-              <span>Table 4</span>
               <h3>Main Construction Results</h3>
             </div>
             <div class="table-scroll">
@@ -345,7 +354,6 @@
 
           <article class="paper-table-card editing-table">
             <div class="paper-table-head">
-              <span>Table 5</span>
               <h3>Main Editing Results</h3>
             </div>
             <div class="table-scroll">
@@ -438,8 +446,8 @@
       }
     }
   </script>
-  <script src="static/demo-cases.js?v=demo14-results-tables-skill-20260611"></script>
-  <script type="module" src="static/demo-viewer.js?v=demo14-results-tables-skill-20260611"></script>
+  <script src="static/demo-cases.js?v=demo14-memory-tables-stack-20260611"></script>
+  <script type="module" src="static/demo-viewer.js?v=demo14-memory-tables-stack-20260611"></script>
   <script src="static/animations.js"></script>
   <script>
     const copyButton = document.getElementById('copyBibtex');

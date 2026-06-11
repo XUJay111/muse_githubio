@@ -1130,6 +1130,7 @@ sup {
 }
 
 .memory-node {
+  position: relative;
   min-width: 0;
   padding: 10px;
   background: rgba(255, 255, 255, 0.5);
@@ -1156,19 +1157,46 @@ sup {
   line-height: 1.25;
 }
 
+.working-node,
+.scene-node,
 .skill-node {
-  position: relative;
   overflow: hidden;
+  border-color: rgba(37, 99, 235, 0.22);
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+}
+
+.working-node {
+  background:
+    linear-gradient(135deg, rgba(239, 246, 255, 0.96), rgba(255, 255, 255, 0.88));
+  box-shadow: inset 3px 0 0 #2563eb, 0 8px 22px rgba(37, 99, 235, 0.08);
+}
+
+.scene-node {
+  background:
+    linear-gradient(135deg, rgba(238, 242, 255, 0.95), rgba(248, 251, 255, 0.88));
+  box-shadow: inset 3px 0 0 #6366f1, 0 8px 22px rgba(99, 102, 241, 0.08);
+}
+
+.skill-node {
   background:
     linear-gradient(135deg, rgba(239, 246, 255, 0.95), rgba(236, 253, 245, 0.82));
-  border-color: rgba(37, 99, 235, 0.22);
   box-shadow: inset 3px 0 0 var(--accent), 0 8px 22px rgba(37, 99, 235, 0.08);
+}
+
+.working-node > span {
+  color: #2563eb;
+}
+
+.scene-node > span {
+  color: #4f46e5;
 }
 
 .skill-node > span {
   color: var(--accent);
 }
 
+.working-node strong,
+.scene-node strong,
 .skill-node strong {
   color: var(--heading);
 }
@@ -1189,6 +1217,7 @@ sup {
   line-height: 1.1;
 }
 
+.memory-mini-flow,
 .skill-mini-flow {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1196,6 +1225,7 @@ sup {
   margin-top: 8px;
 }
 
+.memory-mini-flow b,
 .skill-mini-flow b {
   min-width: 0;
   padding: 4px 5px;
@@ -1207,6 +1237,16 @@ sup {
   font-weight: 850;
   line-height: 1;
   text-align: center;
+}
+
+.working-node .memory-mini-flow b {
+  color: #315f9c;
+  border-color: rgba(37, 99, 235, 0.16);
+}
+
+.scene-node .memory-mini-flow b {
+  color: #4f46e5;
+  border-color: rgba(99, 102, 241, 0.16);
 }
 
 .memory-link {
@@ -1382,7 +1422,7 @@ sup {
 }
 
 .tradeoff-figure {
-  max-width: 760px;
+  max-width: 620px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -1485,7 +1525,7 @@ figcaption {
 
 .paper-table-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   margin: 6px 0 28px;
 }
@@ -1508,7 +1548,7 @@ figcaption {
 }
 
 .paper-table-head {
-  padding: 14px 16px 10px;
+  padding: 12px 16px;
   background:
     linear-gradient(135deg, rgba(239, 246, 255, 0.92), rgba(248, 251, 255, 0.95));
   border-bottom: 1px solid #dbe7f4;
@@ -1519,28 +1559,8 @@ figcaption {
     linear-gradient(135deg, rgba(236, 253, 245, 0.92), rgba(248, 251, 255, 0.95));
 }
 
-.paper-table-head span {
-  display: inline-flex;
-  min-height: 22px;
-  padding: 4px 8px;
-  color: var(--accent);
-  background: #eff6ff;
-  border: 1px solid #c8daf4;
-  border-radius: 999px;
-  font-size: 0.68rem;
-  font-weight: 850;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.editing-table .paper-table-head span {
-  color: #176b4f;
-  background: #ecfdf5;
-  border-color: #bbf7d0;
-}
-
 .paper-table-head h3 {
-  margin: 8px 0 0;
+  margin: 0;
   color: var(--heading);
   font-size: 1rem;
   line-height: 1.2;
