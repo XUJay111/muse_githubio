@@ -71,6 +71,18 @@ img {
   backdrop-filter: blur(14px);
 }
 
+.nav::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: var(--scroll-progress, 0%);
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
+  transition: width 0.1s ease;
+  z-index: 1;
+}
+
 .nav-inner {
   width: min(var(--wide), calc(100% - 40px));
   min-height: 58px;
@@ -124,7 +136,9 @@ img {
   padding: 28px 0 56px;
   color: var(--body);
   background:
-    linear-gradient(180deg, #eef6ff 0%, #f8fbff 62%, #f5f8fc 100%);
+    linear-gradient(135deg, #eef6ff 0%, #f8fbff 50%, #f5f8fc 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
 }
 
 .studio-hero-inner {
@@ -1098,13 +1112,13 @@ figcaption {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transition: transform 240ms ease-out, box-shadow 240ms ease-out;
 }
 
 .metric:hover,
 .result-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 46px rgba(23, 32, 54, 0.1);
+  transform: translateY(-6px);
+  box-shadow: 0 24px 56px rgba(23, 32, 54, 0.14);
 }
 
 .metric {
@@ -1133,6 +1147,7 @@ figcaption {
 
 .result-card {
   padding: 20px;
+  transform-style: preserve-3d;
 }
 
 .result-card h3 {
@@ -1344,5 +1359,107 @@ figcaption {
 
   .narrow p {
     text-align: left;
+  }
+}
+
+/* Gradient animation */
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Scroll reveal animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Lightbox */
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  animation: fadeIn 0.3s ease;
+}
+
+.lightbox.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.lightbox img {
+  max-width: 95%;
+  max-height: 95vh;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 36px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Demo image transition */
+.demo-media img {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.demo-media img.transitioning {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .studio-hero {
+    animation: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
   }
 }
