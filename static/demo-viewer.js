@@ -231,6 +231,7 @@ function renderMemoryTrace(item, stage) {
 
 async function loadModel(item, stageIndex) {
   try {
+    const modelUrl = item.stageGlbs?.[stageIndex] || item.finalGlb;
     if (!state.viewer) {
       state.viewer = new ProjectPageThreeViewer({
         container: els.model,
@@ -243,7 +244,7 @@ async function loadModel(item, stageIndex) {
       });
       await state.viewer.init();
     }
-    state.viewer.load(item.stageGlbs?.[stageIndex] || item.finalGlb);
+    state.viewer.load(modelUrl, currentStage().label);
   } catch (error) {
     setModelOverlayState({
       stateName: "error",
@@ -372,11 +373,12 @@ class ProjectPageThreeViewer {
     this.lightRig.add(fill);
   }
 
-  load(url) {
+  load(url, label = "") {
     if (!url || url === this.currentUrl) return;
     const token = ++this.loadToken;
     this.currentUrl = url;
-    this.setState("loading", "Loading 3D scene...", 6, "Fetching the GLB asset.");
+    const displayName = this.displayName(url, label);
+    this.setState("loading", "Loading 3D scene...", 6, `Fetching ${displayName}.`);
 
     this.loader.load(
       this.cacheBustedUrl(url),
@@ -391,12 +393,12 @@ class ProjectPageThreeViewer {
         this.prepareModel(this.currentModel);
         this.scene.add(this.currentModel);
         this.frameModel();
-        this.setState("loaded", "3D scene loaded", 100, "Drag to orbit / scroll to zoom");
+        this.setState("loaded", "3D scene loaded", 100, `${displayName} loaded. Drag to orbit / scroll to zoom`);
       },
       (event) => {
         if (token !== this.loadToken || url !== this.currentUrl) return;
         const progress = event.total > 0 ? (event.loaded / event.total) * 100 : 35;
-        this.setState("loading", "Loading 3D scene...", progress, "Fetching the GLB asset.");
+        this.setState("loading", "Loading 3D scene...", progress, `Fetching ${displayName}.`);
       },
       () => {
         if (token !== this.loadToken || url !== this.currentUrl) return;
@@ -440,6 +442,12 @@ class ProjectPageThreeViewer {
   cacheBustedUrl(url) {
     const separator = url.includes("?") ? "&" : "?";
     return `${url}${separator}v=${encodeURIComponent(url)}`;
+  }
+
+  displayName(url, label) {
+    const parts = url.split("/");
+    const fileName = parts[parts.length - 1] || url;
+    return label ? `${label} ${fileName}` : fileName;
   }
 
   clearModel({ keepCurrentUrl = false, keepLoadToken = false } = {}) {
