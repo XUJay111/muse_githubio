@@ -296,6 +296,7 @@ class ProjectPageThreeViewer {
     this.hintElement = hintElement;
     this.currentModel = null;
     this.currentUrl = "";
+    this.loadToken = 0;
     this.animationId = 0;
     this.resizeObserver = null;
   }
@@ -373,13 +374,18 @@ class ProjectPageThreeViewer {
 
   load(url) {
     if (!url || url === this.currentUrl) return;
+    const token = ++this.loadToken;
     this.currentUrl = url;
     this.setState("loading", "Loading 3D scene...", 6, "Fetching the GLB asset.");
 
     this.loader.load(
-      url,
+      this.cacheBustedUrl(url),
       (gltf) => {
-        this.clearModel();
+        if (token !== this.loadToken || url !== this.currentUrl) {
+          this.disposeModel(gltf.scene);
+          return;
+        }
+        this.clearModel({ keepCurrentUrl: true, keepLoadToken: true });
         this.currentUrl = url;
         this.currentModel = gltf.scene;
         this.prepareModel(this.currentModel);
@@ -388,10 +394,12 @@ class ProjectPageThreeViewer {
         this.setState("loaded", "3D scene loaded", 100, "Drag to orbit / scroll to zoom");
       },
       (event) => {
+        if (token !== this.loadToken || url !== this.currentUrl) return;
         const progress = event.total > 0 ? (event.loaded / event.total) * 100 : 35;
         this.setState("loading", "Loading 3D scene...", progress, "Fetching the GLB asset.");
       },
       () => {
+        if (token !== this.loadToken || url !== this.currentUrl) return;
         this.currentUrl = "";
         this.setState("error", "Unable to load 3D scene", 0, "Please try another case or refresh the page.");
       }
@@ -429,11 +437,25 @@ class ProjectPageThreeViewer {
     this.controls.update();
   }
 
-  clearModel() {
+  cacheBustedUrl(url) {
+    const separator = url.includes("?") ? "&" : "?";
+    return `${url}${separator}v=${encodeURIComponent(url)}`;
+  }
+
+  clearModel({ keepCurrentUrl = false, keepLoadToken = false } = {}) {
+    if (!keepLoadToken) this.loadToken += 1;
     if (!this.currentModel || !this.scene) return;
 
-    this.scene.remove(this.currentModel);
-    this.currentModel.traverse((node) => {
+    this.disposeModel(this.currentModel);
+    this.currentModel = null;
+    if (!keepCurrentUrl) this.currentUrl = "";
+  }
+
+  disposeModel(model) {
+    if (!model) return;
+
+    if (this.scene) this.scene.remove(model);
+    model.traverse((node) => {
       if (!node.isMesh) return;
       if (node.geometry) node.geometry.dispose();
       const materials = Array.isArray(node.material) ? node.material : [node.material];
@@ -446,8 +468,6 @@ class ProjectPageThreeViewer {
         material.dispose();
       });
     });
-    this.currentModel = null;
-    this.currentUrl = "";
   }
 
   resize() {
