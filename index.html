@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MUSE - Agentic 3D Scene Authoring</title>
   <meta name="description" content="MUSE: Agentic 3D Scene Authoring via Memory-Grounded Incremental Requirement Satisfaction">
-  <link rel="preload" as="image" href="static/demo/02_livingroom_media_add_bookshelf/stage3-merged.png">
+  <link rel="preload" as="image" href="static/demo/02_livingroom_media_add_bookshelf/stage3-diag.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -56,8 +56,14 @@
         <div class="actions">
           <a class="button primary" href="static/muse-paper.pdf">Paper PDF</a>
           <a class="button" href="#citation">BibTeX</a>
-          <span class="button muted" aria-disabled="true">Code coming soon</span>
-          <span class="button muted" aria-disabled="true">Benchmark coming soon</span>
+          <span class="button resource muted" aria-disabled="true" aria-label="Code coming soon">
+            <span class="resource-label">Code</span>
+            <span class="resource-status">coming soon</span>
+          </span>
+          <span class="button resource muted" aria-disabled="true" aria-label="Benchmark coming soon">
+            <span class="resource-label">Benchmark</span>
+            <span class="resource-status">coming soon</span>
+          </span>
         </div>
 
         <div class="hero-highlights">
@@ -73,7 +79,7 @@
             <span class="status-dot"></span>
             <span>MUSE Studio Demo</span>
           </div>
-          <span class="status-chip">Static / no backend</span>
+          <span class="status-chip">Static preview</span>
         </div>
 
         <div class="demo-shell">
@@ -104,14 +110,24 @@
 
             <div class="media-toolbar">
               <div class="tab-row compact" data-demo-view-tabs role="tablist" aria-label="Render view selector"></div>
-              <span>3D loads on demand</span>
+              <span>Render views</span>
             </div>
 
             <div class="demo-media" data-demo-image-wrap>
               <img data-demo-image src="" alt="" loading="lazy">
             </div>
             <div class="demo-model" data-demo-model-wrap hidden>
-              <div class="model-status" data-demo-model-status>Loading 3D scene...</div>
+              <div class="model-overlay" data-demo-model-overlay data-state="idle">
+                <div class="model-status-row">
+                  <span class="model-state-dot" aria-hidden="true"></span>
+                  <span class="model-status" data-demo-model-status>3D view is ready</span>
+                  <strong data-demo-model-progress-text></strong>
+                </div>
+                <div class="model-progress" role="progressbar" aria-label="3D model loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-demo-model-progress>
+                  <span data-demo-model-progress-bar></span>
+                </div>
+                <p class="model-hint" data-demo-model-hint>Drag to orbit / scroll to zoom</p>
+              </div>
               <div class="model-canvas" data-demo-model></div>
             </div>
 

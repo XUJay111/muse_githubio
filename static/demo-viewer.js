@@ -3,7 +3,7 @@ const demoCases = window.MUSE_DEMO_CASES || [];
 const state = {
   caseIndex: 0,
   stageIndex: 2,
-  view: "merged",
+  view: "diag",
   viewer: null
 };
 
@@ -30,12 +30,17 @@ const els = {
   imageWrap: document.querySelector("[data-demo-image-wrap]"),
   modelWrap: document.querySelector("[data-demo-model-wrap]"),
   model: document.querySelector("[data-demo-model]"),
-  modelStatus: document.querySelector("[data-demo-model-status]")
+  modelOverlay: document.querySelector("[data-demo-model-overlay]"),
+  modelStatus: document.querySelector("[data-demo-model-status]"),
+  modelProgress: document.querySelector("[data-demo-model-progress]"),
+  modelProgressBar: document.querySelector("[data-demo-model-progress-bar]"),
+  modelProgressText: document.querySelector("[data-demo-model-progress-text]"),
+  modelHint: document.querySelector("[data-demo-model-hint]")
 };
 
 const viewOptions = [
-  { id: "merged", label: "Split" },
   { id: "diag", label: "Perspective" },
+  { id: "merged", label: "Comparison" },
   { id: "top", label: "Top" },
   { id: "model", label: "3D View" }
 ];
@@ -162,7 +167,7 @@ function renderStageTabs() {
 
 function renderViewTabs() {
   els.viewTabs.innerHTML = "";
-  viewOptions.forEach((view) => {
+  viewOptions.forEach((view, index) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "demo-tab";
@@ -227,12 +232,25 @@ function renderMemoryTrace(item, stage) {
 async function loadModel(item, stageIndex) {
   try {
     if (!state.viewer) {
-      state.viewer = new ProjectPageThreeViewer(els.model, els.modelStatus);
+      state.viewer = new ProjectPageThreeViewer({
+        container: els.model,
+        overlay: els.modelOverlay,
+        statusElement: els.modelStatus,
+        progressElement: els.modelProgress,
+        progressBar: els.modelProgressBar,
+        progressText: els.modelProgressText,
+        hintElement: els.modelHint
+      });
       await state.viewer.init();
     }
     state.viewer.load(item.stageGlbs?.[stageIndex] || item.finalGlb);
   } catch (error) {
-    els.modelStatus.textContent = "Unable to initialize 3D view";
+    setModelOverlayState({
+      stateName: "error",
+      message: "Unable to initialize 3D view",
+      progress: 0,
+      hint: "Please try another case or refresh the page."
+    });
     console.error("Unable to initialize 3D view", error);
   }
 }
@@ -257,10 +275,25 @@ function render() {
   renderMedia();
 }
 
+function setModelOverlayState({ stateName, message, progress = 0, hint = "" }) {
+  const boundedProgress = Math.max(0, Math.min(100, Math.round(progress)));
+  if (els.modelOverlay) els.modelOverlay.dataset.state = stateName;
+  if (els.modelStatus) els.modelStatus.textContent = message;
+  if (els.modelProgress) els.modelProgress.setAttribute("aria-valuenow", String(boundedProgress));
+  if (els.modelProgressBar) els.modelProgressBar.style.width = `${boundedProgress}%`;
+  if (els.modelProgressText) els.modelProgressText.textContent = stateName === "loading" ? `${boundedProgress}%` : "";
+  if (els.modelHint) els.modelHint.textContent = hint;
+}
+
 class ProjectPageThreeViewer {
-  constructor(container, statusElement) {
+  constructor({ container, overlay, statusElement, progressElement, progressBar, progressText, hintElement }) {
     this.container = container;
+    this.overlay = overlay;
     this.statusElement = statusElement;
+    this.progressElement = progressElement;
+    this.progressBar = progressBar;
+    this.progressText = progressText;
+    this.hintElement = hintElement;
     this.currentModel = null;
     this.currentUrl = "";
     this.animationId = 0;
@@ -341,7 +374,7 @@ class ProjectPageThreeViewer {
   load(url) {
     if (!url || url === this.currentUrl) return;
     this.currentUrl = url;
-    this.setStatus("Loading 3D scene...");
+    this.setState("loading", "Loading 3D scene...", 6, "Fetching the GLB asset.");
 
     this.loader.load(
       url,
@@ -352,12 +385,15 @@ class ProjectPageThreeViewer {
         this.prepareModel(this.currentModel);
         this.scene.add(this.currentModel);
         this.frameModel();
-        this.setStatus("Drag to orbit / scroll to zoom");
+        this.setState("loaded", "3D scene loaded", 100, "Drag to orbit / scroll to zoom");
       },
-      undefined,
+      (event) => {
+        const progress = event.total > 0 ? (event.loaded / event.total) * 100 : 35;
+        this.setState("loading", "Loading 3D scene...", progress, "Fetching the GLB asset.");
+      },
       () => {
         this.currentUrl = "";
-        this.setStatus("Unable to load 3D scene");
+        this.setState("error", "Unable to load 3D scene", 0, "Please try another case or refresh the page.");
       }
     );
   }
@@ -430,8 +466,14 @@ class ProjectPageThreeViewer {
     }
   }
 
-  setStatus(message) {
+  setState(stateName, message, progress = 0, hint = "") {
+    const boundedProgress = Math.max(0, Math.min(100, Math.round(progress)));
+    if (this.overlay) this.overlay.dataset.state = stateName;
     if (this.statusElement) this.statusElement.textContent = message;
+    if (this.progressElement) this.progressElement.setAttribute("aria-valuenow", String(boundedProgress));
+    if (this.progressBar) this.progressBar.style.width = `${boundedProgress}%`;
+    if (this.progressText) this.progressText.textContent = stateName === "loading" ? `${boundedProgress}%` : "";
+    if (this.hintElement) this.hintElement.textContent = hint;
   }
 }
 
