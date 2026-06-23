@@ -3,7 +3,7 @@ const demoCases = window.MUSE_DEMO_CASES || [];
 const state = {
   caseIndex: 0,
   stageIndex: 2,
-  view: "perspectiveCompare",
+  view: "model",
   viewer: null
 };
 
@@ -47,9 +47,9 @@ const els = {
 };
 
 const viewOptions = [
+  { id: "model", label: "3D View" },
   { id: "perspectiveCompare", label: "Perspective Compare", imageKey: "diag" },
-  { id: "topCompare", label: "Top Compare", imageKey: "top" },
-  { id: "model", label: "3D View" }
+  { id: "topCompare", label: "Top Compare", imageKey: "top" }
 ];
 
 function currentCase() {
