@@ -469,8 +469,8 @@ window.MUSE_DEMO_CASES = [
       {
         label: "Edit 1",
         title: "Add bar cart and lamp",
-        prompt: "Starting from the current dining room scene, keep the dining table and sideboard. Add one bar cart and one floor lamp.",
-        preserve: ["dining table", "sideboard"],
+        prompt: "Starting from the current dining room scene, keep the dining table, chair, and sideboard. Add one bar cart and one floor lamp.",
+        preserve: ["dining table", "chair", "sideboard"],
         expected: ["dining table", "chair", "sideboard", "bar cart", "floor lamp"],
         absent: [],
         images: {
@@ -482,7 +482,7 @@ window.MUSE_DEMO_CASES = [
       {
         label: "Edit 2",
         title: "Add rug",
-        prompt: "Starting from the current dining room scene, keep the dining table, chairs, sideboard, bar cart, and floor lamp. Add one rug under the dining table.",
+        prompt: "Starting from the current dining room scene, keep the dining table, chair, sideboard, bar cart, and floor lamp. Add one rug under the dining table.",
         preserve: ["dining table", "chair", "sideboard", "bar cart", "floor lamp"],
         expected: ["dining table", "chair", "sideboard", "bar cart", "floor lamp", "rug"],
         absent: [],
@@ -524,8 +524,8 @@ window.MUSE_DEMO_CASES = [
       {
         label: "Edit 1",
         title: "Add cart and plant",
-        prompt: "Starting from the current dining room scene, keep the dining table and sideboard. Add one bar cart and one potted plant.",
-        preserve: ["dining table", "sideboard"],
+        prompt: "Starting from the current dining room scene, keep the dining table, chair, and sideboard. Add one bar cart and one potted plant.",
+        preserve: ["dining table", "chair", "sideboard"],
         expected: ["dining table", "chair", "sideboard", "bar cart", "plant"],
         absent: [],
         images: {
@@ -537,7 +537,7 @@ window.MUSE_DEMO_CASES = [
       {
         label: "Edit 2",
         title: "Move bar cart",
-        prompt: "Starting from the current dining room scene, keep dining table, chairs, sideboard, and plant. Move the bar cart to the right of the sideboard.",
+        prompt: "Starting from the current dining room scene, keep dining table, chair, sideboard, and plant. Move the bar cart to the right of the sideboard.",
         preserve: ["dining table", "chair", "sideboard", "plant"],
         expected: ["dining table", "chair", "sideboard", "bar cart", "plant"],
         absent: [],
@@ -689,8 +689,8 @@ window.MUSE_DEMO_CASES = [
       {
         label: "Edit 1",
         title: "Add chair and lamp",
-        prompt: "Starting from the current dining room scene, keep dining table, chairs, and sideboard. Add one accent chair and one floor lamp.",
-        preserve: ["dining table", "chairs", "sideboard"],
+        prompt: "Starting from the current dining room scene, keep dining table, chair, and sideboard. Add one accent chair and one floor lamp.",
+        preserve: ["dining table", "chair", "sideboard"],
         expected: ["dining table", "chair", "sideboard", "accent chair", "floor lamp"],
         absent: [],
         images: {
@@ -702,8 +702,8 @@ window.MUSE_DEMO_CASES = [
       {
         label: "Edit 2",
         title: "Rotate chair",
-        prompt: "Starting from the current dining room scene, keep dining table, chairs, sideboard, and floor lamp. Rotate the accent chair to face the dining table.",
-        preserve: ["dining table", "chairs", "sideboard", "floor lamp"],
+        prompt: "Starting from the current dining room scene, keep dining table, chair, sideboard, and floor lamp. Rotate the accent chair to face the dining table.",
+        preserve: ["dining table", "chair", "sideboard", "floor lamp"],
         expected: ["dining table", "chair", "sideboard", "accent chair", "floor lamp"],
         absent: [],
         images: {
