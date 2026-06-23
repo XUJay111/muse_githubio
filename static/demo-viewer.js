@@ -229,6 +229,7 @@ function renderMedia() {
   const view = viewOptions.find((option) => option.id === state.view) || viewOptions[0];
 
   els.imageWrap.hidden = isModel;
+  els.imageWrap.dataset.demoView = state.view;
   els.modelWrap.hidden = !isModel;
 
   if (isModel) {

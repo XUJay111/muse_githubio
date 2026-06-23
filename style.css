@@ -942,6 +942,10 @@ sup {
   transform: translateY(-50%) rotate(135deg);
 }
 
+.demo-media[data-demo-view="perspectiveCompare"] .compare-image {
+  transform: scale(1.15);
+}
+
 .compare-labels {
   position: absolute;
   inset: 10px 10px auto;
