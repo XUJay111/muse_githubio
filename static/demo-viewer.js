@@ -1,623 +1,368 @@
-const demoCases = window.MUSE_DEMO_CASES || [];
-
-const state = {
-  caseIndex: 0,
-  stageIndex: 2,
-  view: "model",
-  viewer: null
-};
-
-const els = {
-  caseList: document.querySelector("[data-demo-case-list]"),
-  caseCount: document.querySelector("[data-demo-case-count]"),
-  caseSelect: document.querySelector("[data-demo-case-select]"),
-  stageFilmstrip: document.querySelector("[data-demo-stage-filmstrip]"),
-  viewTabs: document.querySelector("[data-demo-view-tabs]"),
-  title: document.querySelector("[data-demo-title]"),
-  meta: document.querySelector("[data-demo-meta]"),
-  stageLabel: document.querySelector("[data-demo-stage-label]"),
-  prompt: document.querySelector("[data-demo-prompt]"),
-  preserve: document.querySelector("[data-demo-preserve]"),
-  expected: document.querySelector("[data-demo-expected]"),
-  absent: document.querySelector("[data-demo-absent]"),
-  memoryStatus: document.querySelector("[data-demo-memory-status]"),
-  workingMemory: document.querySelector("[data-demo-working-memory]"),
-  workingCount: document.querySelector("[data-demo-working-count]"),
-  sceneMemory: document.querySelector("[data-demo-scene-memory]"),
-  sceneCount: document.querySelector("[data-demo-scene-count]"),
-  skillMemory: document.querySelector("[data-demo-skill-memory]"),
-  skillTag: document.querySelector("[data-demo-skill-tag]"),
-  skillType: document.querySelector("[data-demo-skill-type]"),
-  imageWrap: document.querySelector("[data-demo-image-wrap]"),
-  compareRange: document.querySelector("[data-demo-compare-range]"),
-  afterClip: document.querySelector("[data-demo-after-clip]"),
-  compareDivider: document.querySelector("[data-demo-compare-divider]"),
-  beforeImage: document.querySelector("[data-demo-before-image]"),
-  afterImage: document.querySelector("[data-demo-after-image]"),
-  beforeLabel: document.querySelector("[data-demo-before-label]"),
-  afterLabel: document.querySelector("[data-demo-after-label]"),
-  modelWrap: document.querySelector("[data-demo-model-wrap]"),
-  model: document.querySelector("[data-demo-model]"),
-  modelOverlay: document.querySelector("[data-demo-model-overlay]"),
-  modelStatus: document.querySelector("[data-demo-model-status]"),
-  modelProgress: document.querySelector("[data-demo-model-progress]"),
-  modelProgressBar: document.querySelector("[data-demo-model-progress-bar]"),
-  modelProgressText: document.querySelector("[data-demo-model-progress-text]"),
-  modelHint: document.querySelector("[data-demo-model-hint]")
-};
-
-const viewOptions = [
-  { id: "model", label: "3D View" },
-  { id: "perspectiveCompare", label: "Perspective Compare", imageKey: "diag" },
-  { id: "topCompare", label: "Top Compare", imageKey: "top" }
+const groups = [
+  {label:'Replace', ids:['12','36']}, {label:'Move', ids:['22','23']},
+  {label:'Rotate', ids:['26','44']}, {label:'Resize', ids:['16','48']},
+  {label:'Remove', ids:['08','31']}, {label:'Add', ids:['02','35','45','03']}
 ];
+const caseOrder = groups.flatMap(group=>group.ids);
+const demoCases = [...(window.MUSE_DEMO_CASES || [])].sort((a,b)=>caseOrder.indexOf(a.id.slice(0,2))-caseOrder.indexOf(b.id.slice(0,2)));
+const caseButtons = [];
+const groupFor = item => groups.find(group=>group.ids.includes(item.id.slice(0,2))).label;
+const $ = name => document.querySelector(`[data-demo-${name}]`);
+const els = Object.fromEntries([
+  'case-list','case-count','case-select','stage-filmstrip','view-tabs','title','meta',
+  'step-count','stage-label','instruction','prompt','image-wrap','compare-range',
+  'after-clip','compare-divider','before-image','after-image','before-label','after-label',
+  'model-wrap','model','model-overlay','model-status','model-progress','model-progress-bar',
+  'model-progress-text','model-hint','reset','fullscreen','surface','feedback','previous','replay','play',
+  'composer','command','command-step','command-status','send'
+].map(name => [name, $(name)]));
+const state = { caseIndex: 0, stageIndex: 1, loading: false, sentStage: null, view: 'model', request: 0, playing: false, playToken: 0, viewer: null, ready: null };
+const views = [{id:'model',label:'3D scene'}, {id:'perspectiveCompare',label:'Before / after',key:'diag'}, {id:'topCompare',label:'Top view',key:'top'}];
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const currentCase = () => demoCases[state.caseIndex];
+const currentStage = () => currentCase().stages[state.stageIndex];
+const editCommand = stage => stage.prompt.match(/\b(?:Add|Remove|Replace|Move|Rotate|Make)\b[\s\S]*$/)?.[0] || stage.prompt;
 
-function currentCase() {
-  return demoCases[state.caseIndex];
-}
-
-function currentStage() {
-  return currentCase().stages[state.stageIndex];
-}
-
-function roomLabel(roomType) {
-  return roomType.replace(/_/g, " ");
-}
-
-function setCaseIndex(index) {
-  const nextIndex = Math.max(0, Math.min(demoCases.length - 1, Number(index) || 0));
-  state.caseIndex = nextIndex;
-  state.stageIndex = Math.min(2, currentCase().stages.length - 1);
-  if (state.viewer) state.viewer.enableAutoOrbit();
-  if (state.viewer) state.viewer.clearModel();
-  render();
-}
-
-function setStageIndex(index) {
-  state.stageIndex = index;
-  if (state.viewer) state.viewer.enableAutoOrbit();
-  render();
-}
-
-function renderPills(container, values, emptyText) {
-  container.innerHTML = "";
-  if (!values || values.length === 0) {
-    const span = document.createElement("span");
-    span.className = "demo-empty";
-    span.textContent = emptyText;
-    container.appendChild(span);
-    return;
+function stopPlayback(invalidate=true) {
+  state.playing = false;if(invalidate)state.playToken++;
+  els.play.textContent = 'Play all';
+  els.replay.textContent = 'Replay edit';
+  els.replay.setAttribute('aria-pressed','false');
+  if(invalidate) {
+    state.sentStage = null;
+    els['command-status'].textContent='';
   }
-
-  values.forEach((value) => {
-    const span = document.createElement("span");
-    span.className = "demo-pill";
-    span.textContent = value;
-    container.appendChild(span);
-  });
+  els.play.setAttribute('aria-pressed','false');
 }
 
-function renderCaseButtons() {
-  if (els.caseList) els.caseList.innerHTML = "";
-  if (els.caseCount) {
-    els.caseCount.textContent = `${demoCases.length} cases`;
+function tabKeys(event, index, count, activate) {
+  let next;
+  if (event.key === 'Home') next = 0;
+  if (event.key === 'End') next = count - 1;
+  if (event.key === 'ArrowRight') next = (index + 1) % count;
+  if (event.key === 'ArrowLeft') next = (index + count - 1) % count;
+  if (next !== undefined) { event.preventDefault(); activate(next); }
+}
+
+function buildNavigation() {
+  els['case-count'].textContent = `${demoCases.length} cases`;
+  let lastGroup = '', optionGroup;
+  demoCases.forEach((item,index) => {
+    const group = groupFor(item);
+    if(group!==lastGroup) {
+      const heading=document.createElement('p');heading.className='case-group-label';heading.textContent=group;els['case-list'].append(heading);
+      optionGroup=document.createElement('optgroup');optionGroup.label=group;els['case-select'].append(optionGroup);lastGroup=group;
+    }
+    const button = document.createElement('button'); button.type='button';button.className='case-card';
+    const thumbnail = document.createElement('img');thumbnail.className='case-thumbnail';thumbnail.src=item.stages[2].images.diag;thumbnail.alt='';thumbnail.loading='lazy';
+    const copy = document.createElement('span');copy.className='case-copy';
+    const title = document.createElement('strong');title.textContent=item.stages[2].title;
+    const meta = document.createElement('em');meta.textContent=item.roomType;
+    copy.append(title,meta);button.append(thumbnail,copy);
+    button.addEventListener('click',() => selectCase(index));els['case-list'].append(button);caseButtons.push(button);
+    const option=document.createElement('option');option.value=index;option.textContent=`${item.stages[2].title} · ${item.roomType}`;optionGroup.append(option);
+  });
+  views.forEach((view,index) => {
+    const button=document.createElement('button');button.type='button';button.className='demo-tab';button.textContent=view.label;button.setAttribute('role','tab');
+    button.addEventListener('click',()=>selectView(index));
+    button.addEventListener('keydown',event=>tabKeys(event,index,views.length,next=>{selectView(next);els['view-tabs'].children[next].focus();}));
+    els['view-tabs'].append(button);
+  });
+  for(let i=0;i<3;i++) {
+    const button=document.createElement('button');button.type='button';button.className='stage-frame';button.textContent=['Initial','Edit 1','Edit 2'][i];
+    button.addEventListener('click',()=>selectStage(i));
+    button.addEventListener('keydown',event=>tabKeys(event,i,3,next=>{selectStage(next);els['stage-filmstrip'].children[next].focus();}));
+    els['stage-filmstrip'].append(button);
   }
-  demoCases.forEach((item, index) => {
-    const finalStage = item.stages[item.stages.length - 1];
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "case-card";
-    button.dataset.active = String(index === state.caseIndex);
-    button.setAttribute("aria-pressed", String(index === state.caseIndex));
-    button.setAttribute("aria-label", `Open case ${index + 1}: ${item.title}`);
-    button.title = `${String(index + 1).padStart(2, "0")} - ${item.title}`;
-    button.innerHTML = `
-      <span class="case-check" aria-hidden="true"></span>
-      <span class="case-index">${String(index + 1).padStart(2, "0")}</span>
-      <span class="case-copy">
-        <strong>${item.title}</strong>
-        <em>${roomLabel(item.roomType)} / ${item.editType}</em>
-        <small>${finalStage.label}: ${finalStage.title}</small>
-      </span>
-    `;
-    button.addEventListener("click", () => setCaseIndex(index));
-    if (els.caseList) els.caseList.appendChild(button);
-  });
 }
 
-function renderCaseSelect() {
-  if (!els.caseSelect) return;
-  els.caseSelect.innerHTML = "";
-  demoCases.forEach((item, index) => {
-    const option = document.createElement("option");
-    option.value = String(index);
-    option.textContent = `${String(index + 1).padStart(2, "0")} - ${item.title}`;
-    els.caseSelect.appendChild(option);
-  });
-  els.caseSelect.value = String(state.caseIndex);
+async function selectCase(index) {
+  stopPlayback();state.caseIndex=index;state.stageIndex=1;els['compare-range'].value='50';els['command-status'].textContent='';
+  state.viewer?.cache.retain(currentCase().stageGlbs);
+  await render();
+}
+async function selectStage(index, fromPlayback=false) {
+  if (!fromPlayback) {stopPlayback();els['command-status'].textContent='';}
+  state.stageIndex=Math.max(0,Math.min(currentCase().stages.length-1,index));els['compare-range'].value='50';
+  return render();
+}
+function selectView(index) {
+  stopPlayback();els['command-status'].textContent='';state.view=views[index].id;render();
 }
 
-if (els.caseSelect) {
-  els.caseSelect.addEventListener("change", () => {
-    setCaseIndex(Number(els.caseSelect.value));
-  });
+function renderControls() {
+  const item=currentCase(),stage=currentStage();
+  els.title.textContent=item.title;els.meta.textContent=item.roomType;
+  els['step-count'].textContent=state.stageIndex===0?'Initial scene':`Edit ${state.stageIndex} / ${item.stages.length-1}`;
+  els['stage-label'].textContent=state.stageIndex===0?'STARTING SCENE':`EDIT ${state.stageIndex}`;
+  els.instruction.textContent=stage.title;
+  els.previous.disabled=state.stageIndex===0;
+  els.replay.disabled=!state.playing && (state.stageIndex===0 || state.loading);
+  const nextIndex=state.sentStage ?? Math.min(state.stageIndex+1,item.stages.length-1);
+  els.command.value=editCommand(item.stages[nextIndex]);
+  els.prompt.textContent=item.stages[nextIndex].prompt;
+  els['command-step'].textContent=`Edit ${nextIndex} of ${item.stages.length-1}`;
+  els.send.disabled=state.loading || state.playing || state.stageIndex===item.stages.length-1;
+  els.send.textContent=state.sentStage!==null?'Loading edit…':state.stageIndex===item.stages.length-1?'Edit complete':'Send instruction ↑';
+  els.composer.setAttribute('aria-busy',String(state.sentStage!==null));
+  els['case-select'].value=state.caseIndex;
+  caseButtons.forEach((b,i)=>{b.dataset.active=String(i===state.caseIndex);b.setAttribute('aria-pressed',String(i===state.caseIndex));});
+  [...els['stage-filmstrip'].children].forEach((b,i)=>{b.dataset.active=String(i===state.stageIndex);b.setAttribute('aria-pressed',String(i===state.stageIndex));b.setAttribute('aria-label',`${i+1}. ${item.stages[i].title}`);});
+  [...els['view-tabs'].children].forEach((b,i)=>{const active=views[i].id===state.view;b.dataset.active=String(active);b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
+  els.reset.hidden=state.view!=='model';
 }
 
-if (els.compareRange) {
-  els.compareRange.addEventListener("input", () => {
-    updateCompareSplit(Number(els.compareRange.value));
+function updateSplit() {
+  const initial=state.stageIndex===0;
+  const split=initial?0:Number(els['compare-range'].value);
+  els['after-clip'].style.clipPath=`inset(0 0 0 ${split}%)`;
+  els['compare-divider'].style.left=`${split}%`;
+  els['compare-range'].hidden=initial;els['compare-divider'].hidden=initial;els['before-label'].hidden=initial;
+}
+function loadImage(src) {
+  return new Promise((resolve,reject)=>{
+    const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('Comparison image could not be loaded.'));
+    image.src=src;
+    if(image.complete && image.naturalWidth)resolve(image);
   });
 }
-
-function handleTabKey(event, index, count, activate) {
-  const keyMap = {
-    ArrowRight: 1,
-    ArrowDown: 1,
-    ArrowLeft: -1,
-    ArrowUp: -1
+function preloadNext(item,index) {
+  if(window.navigator?.connection?.saveData || index>=item.stages.length-1)return;
+  const next=item.stages[index+1];
+  for(const src of Object.values(next.images))loadImage(src).catch(()=>{});
+  if(state.view==='model')state.viewer?.cache.prefetch(item.stageGlbs[index+1]);
+}
+function objectChanges(before,after) {
+  return {
+    changed:Object.keys(after).filter(id=>!before[id] || JSON.stringify(before[id])!==JSON.stringify(after[id])),
+    removed:Object.keys(before).filter(id=>!after[id])
   };
+}
 
-  if (event.key === "Home") {
-    event.preventDefault();
-    activate(0);
-    return;
+// Keep at most one case's three compressed GLBs, not multiple parsed GPU scenes.
+class SceneAssetCache {
+  constructor(){this.entries=new Map();}
+  retain(urls) {
+    for(const [url,entry] of this.entries)if(!urls.includes(url)){entry.controller.abort();this.entries.delete(url);}
   }
-
-  if (event.key === "End") {
-    event.preventDefault();
-    activate(count - 1);
-    return;
+  get(url) {
+    if(this.entries.has(url))return this.entries.get(url).promise;
+    const controller=new AbortController(),entry={controller};
+    entry.promise=fetch(url,{signal:controller.signal}).then(response=>{
+      if(!response.ok)throw new Error(`Scene request failed: ${response.status}`);
+      return response.arrayBuffer();
+    }).catch(error=>{if(this.entries.get(url)===entry)this.entries.delete(url);throw error;});
+    this.entries.set(url,entry);return entry.promise;
   }
-
-  if (!(event.key in keyMap)) return;
-  event.preventDefault();
-  activate((index + keyMap[event.key] + count) % count);
+  prefetch(url){this.get(url).catch(()=>{});}
 }
 
-function renderStageFilmstrip() {
-  if (!els.stageFilmstrip) return;
-  els.stageFilmstrip.innerHTML = "";
-  currentCase().stages.forEach((stage, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "stage-frame";
-    button.dataset.active = String(index === state.stageIndex);
-    button.setAttribute("aria-pressed", String(index === state.stageIndex));
-    button.setAttribute("aria-label", `Show ${stage.label}: ${stage.title}`);
-    button.innerHTML = `
-      <span class="stage-frame-image"><img src="${stage.images.diag}" alt="" loading="lazy"></span>
-      <span class="stage-frame-copy">
-        <strong>${stage.label}</strong>
-        <em>${stage.title}</em>
-      </span>
-    `;
-    button.addEventListener("click", () => setStageIndex(index));
-    els.stageFilmstrip.appendChild(button);
-  });
-}
-
-function renderViewTabs() {
-  els.viewTabs.innerHTML = "";
-  viewOptions.forEach((view, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "demo-tab";
-    button.dataset.active = String(view.id === state.view);
-    button.setAttribute("role", "tab");
-    button.setAttribute("aria-selected", String(view.id === state.view));
-    button.tabIndex = view.id === state.view ? 0 : -1;
-    button.textContent = view.label;
-    const activate = (nextIndex) => {
-      state.view = viewOptions[nextIndex].id;
-      renderMedia();
-      renderViewTabs();
-    };
-    button.addEventListener("click", () => {
-      state.view = view.id;
-      renderMedia();
-      renderViewTabs();
-    });
-    button.addEventListener("keydown", (event) => handleTabKey(event, index, viewOptions.length, activate));
-    els.viewTabs.appendChild(button);
-  });
-}
-
-function renderMedia() {
-  const item = currentCase();
-  const stage = currentStage();
-  const isModel = state.view === "model";
-  const view = viewOptions.find((option) => option.id === state.view) || viewOptions[0];
-
-  els.imageWrap.hidden = isModel;
-  els.imageWrap.dataset.demoView = state.view;
-  els.modelWrap.hidden = !isModel;
-
-  if (isModel) {
-    loadModel(item, state.stageIndex);
-    return;
-  }
-
-  const beforeStageIndex = Math.max(0, state.stageIndex - 1);
-  const beforeStage = currentCase().stages[beforeStageIndex];
-  const imageKey = view.imageKey || "diag";
-  els.beforeImage.src = beforeStage.images[imageKey];
-  els.afterImage.src = stage.images[imageKey];
-  els.beforeImage.alt = `${item.title} ${beforeStage.label} ${imageKey} render`;
-  els.afterImage.alt = `${item.title} ${stage.label} ${imageKey} render`;
-  els.beforeLabel.textContent = beforeStageIndex === state.stageIndex ? stage.label : beforeStage.label;
-  els.afterLabel.textContent = stage.label;
-  updateCompareSplit(Number(els.compareRange?.value || 50));
-}
-
-function updateCompareSplit(value) {
-  const split = Math.max(0, Math.min(100, Number.isFinite(value) ? value : 50));
-  if (els.afterClip) els.afterClip.style.clipPath = `inset(0 0 0 ${split}%)`;
-  if (els.compareDivider) els.compareDivider.style.left = `${split}%`;
-  if (els.compareRange) els.compareRange.value = String(split);
-}
-
-function renderMemoryTrace(item, stage) {
-  const activeGoals = stage.expected.length + stage.absent.length;
-  const preserved = stage.preserve.length;
-  const skillMap = {
-    "Add object": "Insert + verify",
-    "Delete object": "Remove + protect",
-    "Replace object": "Swap target",
-    "Scale object": "Resize local object",
-    "Move object": "Relocate target",
-    "Rotate object": "Orient target"
-  };
-
-  els.memoryStatus.textContent = item.quality === "bbox-clear" ? "BBox-clear case" : "Curated case";
-  els.workingMemory.textContent = `${stage.label}: ${stage.title}`;
-  els.workingCount.textContent = `${activeGoals} active checks`;
-  els.sceneMemory.textContent = preserved > 0 ? "Protected scene bindings" : "Initial scene state";
-  els.sceneCount.textContent = preserved > 0 ? `${preserved} preserved objects` : "new room memory";
-  els.skillMemory.textContent = skillMap[item.editType] || "Authoring pattern";
-  els.skillTag.textContent = item.accent;
-  if (els.skillType) {
-    els.skillType.textContent = item.editType;
-  }
-}
-
-async function loadModel(item, stageIndex) {
+async function render() {
+  state.loading=true;renderControls();const request=++state.request;const item=currentCase(),stage=currentStage(),index=state.stageIndex;
+  els.feedback.textContent='';const is3D=state.view==='model';
+  els['image-wrap'].hidden=is3D;els['model-wrap'].hidden=!is3D;
   try {
-    const modelUrl = item.stageGlbs?.[stageIndex] || item.finalGlb;
-    if (!state.viewer) {
-      state.viewer = new ProjectPageThreeViewer({
-        container: els.model,
-        overlay: els.modelOverlay,
-        statusElement: els.modelStatus,
-        progressElement: els.modelProgress,
-        progressBar: els.modelProgressBar,
-        progressText: els.modelProgressText,
-        hintElement: els.modelHint
-      });
-      await state.viewer.init();
+    if (is3D) {
+      if (!state.viewer) {
+        state.viewer=new SceneViewer(els.model);
+        state.ready=state.viewer.init().catch(error=>{state.viewer?.dispose();state.viewer=null;state.ready=null;throw error;});
+      }
+      await state.ready;
+      if(request!==state.request)return false;
+      state.viewer.cache.retain(item.stageGlbs);
+      const loaded=await state.viewer.load(item.stageGlbs[index],item.id,stage,()=>request===state.request);
+      if(loaded && request===state.request)preloadNext(item,index);
+      return loaded;
     }
-    state.viewer.load(modelUrl, currentStage().label);
-  } catch (error) {
-    setModelOverlayState({
-      stateName: "error",
-      message: "Unable to initialize 3D view",
-      progress: 0,
-      hint: "Please try another case or refresh the page."
-    });
-    console.error("Unable to initialize 3D view", error);
+    const key=views.find(v=>v.id===state.view).key;const before=item.stages[Math.max(0,index-1)];
+    els['before-label'].textContent=`Before · ${before.label}`;els['after-label'].textContent=index===0?'Starting scene':`After · ${stage.label}`;
+    updateSplit();
+    await Promise.all([loadImage(before.images[key]),loadImage(stage.images[key])]);
+    if(request!==state.request)return false;
+    els['before-image'].src=before.images[key];els['before-image'].alt=`${item.title}, ${before.label}`;
+    els['after-image'].src=stage.images[key];els['after-image'].alt=`${item.title}, ${stage.label}`;
+    preloadNext(item,index);return true;
+  } catch(error) {
+    if(request!==state.request)return false;
+    stopPlayback(false);els.feedback.textContent=is3D?'3D could not load. Try Before / after, or select this stage again.':'Comparison could not load. Select this stage to retry.';
+    setModelStatus('error','Unable to load scene',0,'Try another view or retry this stage.');
+    console.error(error);return false;
+  } finally {
+    if(request===state.request){state.loading=false;renderControls();}
   }
 }
 
-function render() {
-  const item = currentCase();
-  const stage = currentStage();
-
-  renderCaseButtons();
-  renderCaseSelect();
-  renderStageFilmstrip();
-  renderViewTabs();
-
-  els.title.textContent = item.title;
-  els.meta.textContent = `${roomLabel(item.roomType)} / ${item.editType}`;
-  els.stageLabel.textContent = `${stage.label}: ${stage.title}`;
-  els.prompt.textContent = stage.prompt;
-  renderPills(els.preserve, stage.preserve, "No prior objects to preserve");
-  renderPills(els.expected, stage.expected, "No expected object checks");
-  renderPills(els.absent, stage.absent, "No removal target");
-  renderMemoryTrace(item, stage);
-  renderMedia();
+async function sendInstruction(event) {
+  event?.preventDefault();
+  if(state.loading || state.playing || state.stageIndex>=currentCase().stages.length-1)return;
+  stopPlayback();const from=state.stageIndex,target=from+1;
+  state.sentStage=target;els['command-status'].textContent='Loading the edited scene…';
+  const pending=selectStage(target,true),request=state.request;
+  const loaded=await pending;
+  if(request!==state.request)return;
+  state.sentStage=null;
+  if(!loaded){state.stageIndex=from;els['command-status'].textContent='The edit could not load. Send the instruction to retry.';}
+  else els['command-status'].textContent=`Edit ${target} shown. Replay it or compare before and after.`;
+  renderControls();
 }
-
-function setModelOverlayState({ stateName, message, progress = 0, hint = "" }) {
-  const boundedProgress = Math.max(0, Math.min(100, Math.round(progress)));
-  if (els.modelOverlay) els.modelOverlay.dataset.state = stateName;
-  if (els.modelStatus) els.modelStatus.textContent = message;
-  if (els.modelProgress) els.modelProgress.setAttribute("aria-valuenow", String(boundedProgress));
-  if (els.modelProgressBar) els.modelProgressBar.style.width = `${boundedProgress}%`;
-  if (els.modelProgressText) els.modelProgressText.textContent = stateName === "loading" ? `${boundedProgress}%` : "";
-  if (els.modelHint) els.modelHint.textContent = hint;
-}
-
-class ProjectPageThreeViewer {
-  constructor({ container, overlay, statusElement, progressElement, progressBar, progressText, hintElement }) {
-    this.container = container;
-    this.overlay = overlay;
-    this.statusElement = statusElement;
-    this.progressElement = progressElement;
-    this.progressBar = progressBar;
-    this.progressText = progressText;
-    this.hintElement = hintElement;
-    this.currentModel = null;
-    this.currentUrl = "";
-    this.loadToken = 0;
-    this.animationId = 0;
-    this.resizeObserver = null;
-    this.autoOrbit = true;
+async function replayEdit() {
+  if(state.playing){stopPlayback();renderControls();return;}
+  if(state.loading || state.stageIndex===0)return;
+  const target=state.stageIndex;state.playing=true;const token=++state.playToken;
+  els.replay.textContent='Stop replay';els.replay.setAttribute('aria-pressed','true');
+  els['command-status'].textContent=`Before edit ${target}`;
+  if(!await selectStage(target-1,true)){if(token===state.playToken){stopPlayback();renderControls();}return;}
+  await new Promise(resolve=>setTimeout(resolve,reducedMotion.matches?0:1300));
+  if(!state.playing || token!==state.playToken)return;
+  const loaded=await selectStage(target,true);
+  if(token===state.playToken){
+    stopPlayback();
+    if(loaded)els['command-status'].textContent=`After edit ${target} · ${currentStage().title}`;
+    renderControls();
   }
+}
 
+async function playSequence() {
+  if(state.playing){stopPlayback();renderControls();return;}
+  state.playing=true;const token=++state.playToken;
+  els.play.textContent='Pause';els.play.setAttribute('aria-pressed','true');
+  if(!await selectStage(0,true)) {if(token===state.playToken)stopPlayback();return;}
+  while(state.playing && token===state.playToken) {
+    await new Promise(resolve=>setTimeout(resolve,2400));
+    if(!state.playing || token!==state.playToken)return;
+    if(state.stageIndex===currentCase().stages.length-1){stopPlayback();renderControls();return;}
+    if(!await selectStage(state.stageIndex+1,true)){if(token===state.playToken)stopPlayback();return;}
+  }
+}
+function setModelStatus(status,message,progress,hint) {
+  els['model-overlay'].dataset.state=status;els['model-status'].textContent=message;els['model-hint'].textContent=hint;
+  els['model-progress'].setAttribute('aria-valuenow',String(Math.round(progress)));els['model-progress-bar'].style.width=`${progress}%`;
+  els['model-progress-text'].textContent=status==='loading'?`${Math.round(progress)}%`:'';
+}
+
+class SceneViewer {
+  constructor(container) {this.container=container;this.currentModel=null;this.currentUrl='';this.caseId=null;this.helpers=[];this.highlightUntil=0;this.objectStates={};this.cache=new SceneAssetCache();}
   async init() {
-    if (this.renderer) return;
-
-    const [{ default: threeModule }, { GLTFLoader }, { OrbitControls }, { RoomEnvironment }] = await Promise.all([
-      import("three").then((module) => ({ default: module })),
-      import("three/addons/loaders/GLTFLoader.js"),
-      import("three/addons/controls/OrbitControls.js"),
-      import("three/addons/environments/RoomEnvironment.js")
-    ]);
-
-    this.THREE = threeModule;
-    const THREE = this.THREE;
-
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x101827);
-
-    const { width, height } = this.dimensions();
-    this.camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 120);
-    this.camera.position.set(5, 4, 6);
-
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    this.renderer.setSize(width, height);
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.85;
-    if ("outputColorSpace" in this.renderer) {
-      this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    const [THREE,{GLTFLoader},{OrbitControls},{RoomEnvironment}]=await Promise.all([
+      import('three'),import('three/addons/loaders/GLTFLoader.js'),import('three/addons/controls/OrbitControls.js'),import('three/addons/environments/RoomEnvironment.js')]);
+    this.THREE=THREE;this.scene=new THREE.Scene();this.scene.background=new THREE.Color(0xe8eef5);
+    this.camera=new THREE.OrthographicCamera(-6,6,6,-6,.1,150);
+    this.renderer=new THREE.WebGLRenderer({antialias:true});this.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    this.renderer.outputColorSpace=THREE.SRGBColorSpace;this.renderer.toneMapping=THREE.ACESFilmicToneMapping;this.renderer.toneMappingExposure=1.0;
+    this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+    this.container.append(this.renderer.domElement);
+    this.pmrem=new THREE.PMREMGenerator(this.renderer);this.environment=this.pmrem.fromScene(new RoomEnvironment(),.04);this.scene.environment=this.environment.texture;
+    this.scene.add(new THREE.HemisphereLight(0xffffff,0xb0bfd1,1.1));
+    const key=new THREE.DirectionalLight(0xffffff,2);key.position.set(5,10,5);key.castShadow=true;
+    key.shadow.mapSize.set(1024,1024);key.shadow.normalBias=.025;key.shadow.bias=-.0001;
+    this.keyLight=key;this.scene.add(key,key.target);
+    this.controls=new OrbitControls(this.camera,this.renderer.domElement);this.controls.enableDamping=true;this.controls.dampingFactor=.08;
+    this.controls.autoRotate=false;this.controls.maxPolarAngle=Math.PI/2-.02;
+    this.controls.addEventListener('start',()=>{stopPlayback();renderControls();});
+    this.loader=new GLTFLoader();this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(this.container);this.resize();this.animate();
+  }
+  async load(url,caseId,stage,isCurrent) {
+    if(url===this.currentUrl) {
+      this.resize();
+      setModelStatus('loaded','Scene ready',100,'Drag to orbit · scroll to zoom');
+      return true;
     }
-    this.container.appendChild(this.renderer.domElement);
-
-    const pmrem = new THREE.PMREMGenerator(this.renderer);
-    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    this.pmrem = pmrem;
-
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.enableDamping = true;
-    this.controls.dampingFactor = 0.055;
-    this.controls.maxPolarAngle = Math.PI / 2 + 0.08;
-    this.controls.autoRotate = false;
-    this.controls.addEventListener("start", () => this.disableAutoOrbit());
-
-    this.loader = new GLTFLoader();
-    this.addLights();
-    this.bindInteractionGuards();
-
-    this.resizeObserver = new ResizeObserver(() => this.resize());
-    this.resizeObserver.observe(this.container);
-    this.animate();
-  }
-
-  dimensions() {
-    return {
-      width: Math.max(this.container.clientWidth || 1, 320),
-      height: Math.max(this.container.clientHeight || 1, 320)
-    };
-  }
-
-  addLights() {
-    const THREE = this.THREE;
-    this.lightRig = new THREE.Group();
-    this.scene.add(this.lightRig);
-
-    this.lightRig.add(new THREE.HemisphereLight(0xffffff, 0x8da3be, 0.75));
-    const key = new THREE.DirectionalLight(0xfff1dc, 2.2);
-    key.position.set(4, 8, 5);
-    key.castShadow = true;
-    this.lightRig.add(key);
-
-    const fill = new THREE.DirectionalLight(0x90d7ff, 0.7);
-    fill.position.set(-5, 3, -4);
-    this.lightRig.add(fill);
-  }
-
-  load(url, label = "") {
-    if (!url || url === this.currentUrl) return;
-    const token = ++this.loadToken;
-    this.currentUrl = url;
-    const displayName = this.displayName(url, label);
-    this.setState("loading", "Loading 3D scene...", 6, `Fetching ${displayName}.`);
-
-    this.loader.load(
-      this.cacheBustedUrl(url),
-      (gltf) => {
-        if (token !== this.loadToken || url !== this.currentUrl) {
-          this.disposeModel(gltf.scene);
-          return;
-        }
-        this.clearModel({ keepCurrentUrl: true, keepLoadToken: true });
-        this.currentUrl = url;
-        this.currentModel = gltf.scene;
-        this.prepareModel(this.currentModel);
-        this.scene.add(this.currentModel);
-        this.frameModel();
-        this.enableAutoOrbit();
-        this.setState("loaded", "3D scene loaded", 100, `${displayName} loaded. Auto orbit is on; drag to take control.`);
-      },
-      (event) => {
-        if (token !== this.loadToken || url !== this.currentUrl) return;
-        const progress = event.total > 0 ? (event.loaded / event.total) * 100 : 35;
-        this.setState("loading", "Loading 3D scene...", progress, `Fetching ${displayName}.`);
-      },
-      () => {
-        if (token !== this.loadToken || url !== this.currentUrl) return;
-        this.currentUrl = "";
-        this.setState("error", "Unable to load 3D scene", 0, "Please try another case or refresh the page.");
+    setModelStatus('loading','Loading scene…',8,'You can switch examples while this loads.');
+    const bytes=await this.cache.get(url);
+    if(!isCurrent())return false;
+    setModelStatus('loading','Preparing scene…',70,'Loading textures');
+    const gltf=await new Promise((resolve,reject)=>this.loader.parse(bytes,'',resolve,reject));
+    if(!isCurrent()){this.disposeModel(gltf.scene);return false;}
+    const sameCase=this.caseId===caseId;
+    this.clearHighlights();
+    const changes=objectChanges(this.objectStates,stage.objectStates);
+    const removed=[];
+    if(sameCase && this.currentModel && !reducedMotion.matches) {
+      this.currentModel.updateMatrixWorld(true);
+      for(const id of changes.removed) {
+        const object=this.findObject(this.currentModel,id);
+        if(object)removed.push(new this.THREE.Box3().setFromObject(object));
       }
-    );
-  }
-
-  prepareModel(model) {
-    const THREE = this.THREE;
-    model.traverse((node) => {
-      if (!node.isMesh) return;
-      if (this.isAssetShadowMesh(node)) {
-        node.visible = false;
-        return;
+    }
+    if(this.currentModel){this.scene.remove(this.currentModel);this.disposeModel(this.currentModel);}
+    this.currentModel=gltf.scene;this.caseId=caseId;this.currentUrl=url;this.objectStates=stage.objectStates;
+    this.currentModel.traverse(node=>{
+      if(!node.isMesh)return;
+      node.castShadow=!['Floor','wall_back','wall_left'].includes(node.name);node.receiveShadow=true;
+      const mats=Array.isArray(node.material)?node.material:[node.material];
+      mats.forEach(m=>{if(m){m.side=this.THREE.DoubleSide;m.envMapIntensity=.7;}});
+    });
+    this.scene.add(this.currentModel);this.currentModel.updateMatrixWorld(true);
+    if(!sameCase){this.configureFrame();this.resetView();} else this.resize();
+    if(sameCase && !reducedMotion.matches) {
+      for(const id of changes.changed) {
+        const object=this.findObject(this.currentModel,id);
+        if(object)this.addHighlight(new this.THREE.Box3().setFromObject(object),0x2563eb);
       }
-      const nodeName = (node.name || "").toLowerCase();
-      const isWall = nodeName.startsWith("wall_");
-      node.castShadow = !isWall;
-      node.receiveShadow = true;
-      const materials = Array.isArray(node.material) ? node.material : [node.material];
-      const preparedMaterials = materials.map((material) => {
-        if (!material) return material;
-        if (isWall) {
-          material = material.clone();
-          material.transparent = true;
-          material.opacity = 0.16;
-          material.depthWrite = false;
-          material.side = THREE.DoubleSide;
-        }
-        if (typeof material.envMapIntensity === "number") {
-          material.envMapIntensity = Math.max(material.envMapIntensity, 0.55);
-        }
-        material.needsUpdate = true;
-        return material;
-      });
-      node.material = Array.isArray(node.material) ? preparedMaterials : preparedMaterials[0];
-    });
+      for(const box of removed)this.addHighlight(box,0xc77b47,true);
+      this.highlightUntil=performance.now()+3400;
+    }
+    setModelStatus('loaded','Scene ready',100,'Drag to orbit · scroll to zoom');
+    return true;
   }
-
-  isAssetShadowMesh(node) {
-    const materialNames = (Array.isArray(node.material) ? node.material : [node.material])
-      .map((material) => material?.name || "");
-    const names = [
-      node.name,
-      node.geometry?.name,
-      node.userData?.name,
-      ...materialNames
-    ]
-      .filter(Boolean)
-      .map((name) => String(name).toLowerCase());
-    return names.some((name) => name === "shadow" || name.startsWith("shadow_") || name.endsWith("_shadow"));
+  findObject(model,id) {let result=null;model.traverse(node=>{if(node.name===id || node.userData.objectId===id)result=node;});return result;}
+  configureFrame() {
+    const T=this.THREE;const floor=this.currentModel.getObjectByName('Floor');
+    const box=new T.Box3().setFromObject(floor||this.currentModel);const center=box.getCenter(new T.Vector3());center.y=1.15;
+    this.frame={center,width:box.max.x-box.min.x,depth:box.max.z-box.min.z};
+    const reach=Math.max(this.frame.width,this.frame.depth);
+    this.keyLight.position.copy(center).add(new T.Vector3(5,10,5));this.keyLight.target.position.copy(center);
+    Object.assign(this.keyLight.shadow.camera,{left:-reach,right:reach,top:reach,bottom:-reach,near:.1,far:40});
+    this.keyLight.shadow.camera.updateProjectionMatrix();
   }
-
-  frameModel() {
-    const THREE = this.THREE;
-    const box = new THREE.Box3().setFromObject(this.currentModel);
-    const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3());
-    const span = Math.max(size.x, size.y, size.z, 4);
-
-    this.controls.target.copy(center);
-    this.camera.position.set(center.x + span * 0.8, center.y + span * 0.58, center.z + span * 0.8);
-    this.camera.near = Math.max(span / 100, 0.05);
-    this.camera.far = span * 12;
-    this.camera.lookAt(center);
-    this.camera.updateProjectionMatrix();
-    this.controls.update();
+  resetView() {
+    if(!this.frame)return;
+    const T=this.THREE,center=this.frame.center;
+    this.controls.target.copy(center);this.camera.position.copy(center).add(new T.Vector3(12/Math.sqrt(2),12*Math.tan(38*Math.PI/180),12/Math.sqrt(2)));
+    this.camera.lookAt(center);this.camera.zoom=1;this.controls.update();this.resize();
   }
-
-  bindInteractionGuards() {
-    const stopAutoOrbit = () => this.disableAutoOrbit();
-    this.container.addEventListener("pointerdown", stopAutoOrbit, { passive: true });
-    this.container.addEventListener("wheel", stopAutoOrbit, { passive: true });
-    this.container.addEventListener("keydown", stopAutoOrbit);
-  }
-
-  enableAutoOrbit() {
-    this.autoOrbit = true;
-    if (this.hintElement) this.hintElement.textContent = "Auto orbit is on; drag to take control.";
-  }
-
-  disableAutoOrbit() {
-    if (!this.autoOrbit) return;
-    this.autoOrbit = false;
-    if (this.hintElement) this.hintElement.textContent = "Manual orbit mode. Drag to orbit / scroll to zoom.";
-  }
-
-  cacheBustedUrl(url) {
-    const separator = url.includes("?") ? "&" : "?";
-    return `${url}${separator}v=${encodeURIComponent(url)}`;
-  }
-
-  displayName(url, label) {
-    const parts = url.split("/");
-    const fileName = parts[parts.length - 1] || url;
-    return label ? `${label} ${fileName}` : fileName;
-  }
-
-  clearModel({ keepCurrentUrl = false, keepLoadToken = false } = {}) {
-    if (!keepLoadToken) this.loadToken += 1;
-    if (!this.currentModel || !this.scene) return;
-
-    this.disposeModel(this.currentModel);
-    this.currentModel = null;
-    if (!keepCurrentUrl) this.currentUrl = "";
-  }
-
-  disposeModel(model) {
-    if (!model) return;
-
-    if (this.scene) this.scene.remove(model);
-    model.traverse((node) => {
-      if (!node.isMesh) return;
-      if (node.geometry) node.geometry.dispose();
-      const materials = Array.isArray(node.material) ? node.material : [node.material];
-      materials.forEach((material) => {
-        if (!material) return;
-        Object.keys(material).forEach((key) => {
-          const value = material[key];
-          if (value && typeof value.dispose === "function") value.dispose();
-        });
-        material.dispose();
-      });
-    });
-  }
-
   resize() {
-    if (!this.renderer || !this.camera) return;
-    const { width, height } = this.dimensions();
-    this.camera.aspect = width / height;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(width, height);
-  }
-
-  animate() {
-    this.animationId = requestAnimationFrame(() => this.animate());
-    if (this.autoOrbit && this.currentModel && this.controls) {
-      this.controls.autoRotate = true;
-      this.controls.autoRotateSpeed = 0.55;
-    } else if (this.controls) {
-      this.controls.autoRotate = false;
+    if(!this.renderer)return;
+    const width=Math.max(1,this.container.clientWidth),height=Math.max(1,this.container.clientHeight),aspect=width/height;
+    if(this.frame) {
+      // Match the offline framing using only room width/depth and fixed wall height.
+      const projectedWidth=(this.frame.width+this.frame.depth)/Math.sqrt(2);
+      const projectedHeight=projectedWidth*Math.sin(38*Math.PI/180)+2.3*Math.cos(38*Math.PI/180);
+      const vertical=Math.max(projectedHeight,projectedWidth)*1.06*Math.max(1,1/aspect);
+      this.camera.left=-vertical*aspect/2;this.camera.right=vertical*aspect/2;this.camera.top=vertical/2;this.camera.bottom=-vertical/2;
     }
-    if (this.controls) this.controls.update();
-    if (this.renderer && this.scene && this.camera) {
-      this.renderer.render(this.scene, this.camera);
-    }
+    this.camera.updateProjectionMatrix();this.renderer.setSize(width,height,false);
   }
-
-  setState(stateName, message, progress = 0, hint = "") {
-    const boundedProgress = Math.max(0, Math.min(100, Math.round(progress)));
-    if (this.overlay) this.overlay.dataset.state = stateName;
-    if (this.statusElement) this.statusElement.textContent = message;
-    if (this.progressElement) this.progressElement.setAttribute("aria-valuenow", String(boundedProgress));
-    if (this.progressBar) this.progressBar.style.width = `${boundedProgress}%`;
-    if (this.progressText) this.progressText.textContent = stateName === "loading" ? `${boundedProgress}%` : "";
-    if (this.hintElement) this.hintElement.textContent = hint;
+  addHighlight(box,color,dashed=false) {
+    const T=this.THREE,size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3());
+    const shape=new T.BoxGeometry(size.x+.035,size.y+.035,size.z+.035);
+    const geometry=new T.EdgesGeometry(shape);shape.dispose();
+    const material=dashed?new T.LineDashedMaterial({color,dashSize:.08,gapSize:.055}):new T.LineBasicMaterial({color});
+    material.depthTest=false;material.transparent=true;material.opacity=.55;
+    const helper=new T.LineSegments(geometry,material);helper.position.copy(center);helper.renderOrder=10;
+    if(dashed)helper.computeLineDistances();
+    this.scene.add(helper);this.helpers.push(helper);
   }
+  clearHighlights(){for(const h of this.helpers){this.scene.remove(h);h.geometry.dispose();h.material.dispose();}this.helpers=[];}
+  disposeModel(model) {
+    const geometries=new Set(),materials=new Set(),textures=new Set(),images=new Set();model.traverse(node=>{if(node.geometry)geometries.add(node.geometry);for(const m of (Array.isArray(node.material)?node.material:[node.material]))if(m)materials.add(m);});
+    for(const m of materials)for(const value of Object.values(m))if(value?.isTexture)textures.add(value);
+    geometries.forEach(g=>g.dispose());textures.forEach(t=>{if(t.source?.data)images.add(t.source.data);t.dispose();});images.forEach(image=>image.close?.());materials.forEach(m=>m.dispose());
+  }
+  animate(){this.animation=requestAnimationFrame(()=>this.animate());if(document.hidden || els['model-wrap'].hidden)return;if(this.helpers.length){const left=this.highlightUntil-performance.now();if(left<=0)this.clearHighlights();else for(const h of this.helpers)h.material.opacity=.55*Math.min(1,left/900);}this.controls.update();this.renderer.render(this.scene,this.camera);}
+  dispose(){this.cache.retain([]);this.clearHighlights();if(this.currentModel)this.disposeModel(this.currentModel);cancelAnimationFrame(this.animation);this.resizeObserver?.disconnect();this.controls?.dispose();this.environment?.dispose();this.pmrem?.dispose();this.renderer?.dispose();this.renderer?.domElement.remove();}
 }
 
-window.ProjectPageThreeViewer = ProjectPageThreeViewer;
-
-if (demoCases.length > 0) {
-  render();
-}
+els['case-select'].addEventListener('change',event=>selectCase(Number(event.target.value)));
+els['compare-range'].addEventListener('input',()=>{stopPlayback();renderControls();updateSplit();});
+els.previous.addEventListener('click',()=>selectStage(state.stageIndex-1));
+els.composer.addEventListener('submit',sendInstruction);
+els.command.addEventListener('keydown',event=>{if(event.key==='Enter' && (event.ctrlKey || event.metaKey)){event.preventDefault();sendInstruction();}});
+els.replay.addEventListener('click',replayEdit);
+els.play.addEventListener('click',playSequence);
+els.reset.addEventListener('click',()=>{stopPlayback();renderControls();state.viewer?.resetView();});
+if(!document.fullscreenEnabled)els.fullscreen.hidden=true;
+els.fullscreen.addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await els.surface.requestFullscreen();}catch{els.feedback.textContent='Fullscreen is unavailable in this browser.';}});
+document.addEventListener('fullscreenchange',()=>{els.fullscreen.textContent=document.fullscreenElement?'Exit fullscreen':'Fullscreen';state.viewer?.resize();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){stopPlayback();renderControls();}});
+if(demoCases.length){buildNavigation();render();}

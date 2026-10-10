@@ -6,8 +6,9 @@
   <title>MUSE - Agentic 3D Scene Authoring</title>
   <meta name="description" content="MUSE: Agentic 3D Scene Authoring via Memory-Grounded Incremental Requirement Satisfaction">
   <link rel="preload" as="image" href="static/figures/hero-scenes.webp" type="image/webp" fetchpriority="high">
-  <link rel="preload" as="image" href="static/demo/02_livingroom_media_add_bookshelf/stage3-diag.png">
-  <link rel="stylesheet" href="style.css?v=paper-hero-20260707">
+  <link rel="preload" as="image" href="static/demo/12_bedroom_replace_bench_with_bookshelf/stage2-diag.png">
+  <link rel="stylesheet" href="style.css?v=video-20260925">
+  <link rel="stylesheet" href="demo.css?v=send-edit-20260925">
 </head>
 <body>
   <nav class="nav">
@@ -15,6 +16,7 @@
       <a class="brand" href="#top">MUSE</a>
       <div class="nav-links">
         <a href="#demo">Demo</a>
+        <a href="#video">Video</a>
         <a href="#abstract">Abstract</a>
         <a href="#method">Method</a>
         <a href="#benchmark">AuthorBench</a>
@@ -31,8 +33,7 @@
         <p class="venue">Preprint</p>
         <h1 id="paper-title">MUSE: Agentic 3D Scene Authoring via Memory-Grounded Incremental Requirement Satisfaction</h1>
         <p class="hero-summary">
-          A memory-grounded agentic framework for verified local construction and preservation-aware
-          editing of 3D indoor scenes.
+          Creating 3D scenes, as simple as a conversation.
         </p>
 
         <div class="authors">
@@ -52,6 +53,12 @@
         <div class="author-notes">
           <span>* Equal contribution</span>
           <span># Corresponding author</span>
+        </div>
+
+        <div class="actions">
+          <a class="button primary" href="#demo">Explore the Demo</a>
+          <a class="button" href="#video">Watch the Video</a>
+          <a class="button" href="#gallery">View Comparisons</a>
         </div>
 
         <div class="actions">
@@ -76,136 +83,86 @@
     </div>
   </header>
 
-  <section class="demo-section" id="demo">
+  <section class="film-section" id="video" aria-labelledby="video-heading">
+    <div class="film-inner">
+      <div class="film-heading">
+        <div><p class="demo-eyebrow">MUSE IN ACTION</p><h2 id="video-heading">From words to spaces.</h2></div>
+        <p>86 seconds of scene creation and editing.</p>
+      </div>
+      <video class="demo-film" controls playsinline preload="none" poster="static/video/muse_demo_poster.jpg" aria-label="MUSE scene creation and editing demonstration">
+        <source src="static/video/muse_demo_1080p.mp4" type="video/mp4">
+        Your browser does not support embedded video. <a href="static/video/muse_demo_1080p.mp4">Download the video</a>.
+      </video>
+      <div class="film-footer"><span>English · 1080p · Interaction sounds</span><a href="static/video/muse_demo_1080p.mp4" download>Download MP4 <span aria-hidden="true">↓</span></a></div>
+    </div>
+  </section>
+
+  <section class="demo-section" id="demo" aria-labelledby="demo-heading">
     <div class="demo-section-inner">
-      <section class="demo-console" aria-label="MUSE Studio static demo">
-        <div class="console-topbar">
-          <div>
-            <span class="status-dot"></span>
-            <span>MUSE Studio Demo</span>
+      <div class="demo-intro">
+        <div><p class="demo-eyebrow">INTERACTIVE EXAMPLES</p><h2 id="demo-heading">One instruction. A visible change.</h2></div>
+        <p>Explore 14 curated scene sequences. Choose an example, send its instruction, and see what changes.</p>
+      </div>
+      <div class="demo-console">
+        <aside class="case-rail" aria-label="Choose an example">
+          <div class="rail-heading"><span>Explore examples</span><span data-demo-case-count>14 cases</span></div>
+          <select class="case-select" data-demo-case-select aria-label="Select example"></select>
+          <div class="case-list" data-demo-case-list></div>
+        </aside>
+        <div class="demo-workspace">
+          <div class="workspace-header">
+            <div><p class="workspace-kicker" data-demo-meta></p><h3 data-demo-title></h3></div>
+            <span class="demo-step-count" data-demo-step-count></span>
           </div>
-          <span class="status-chip">Static preview</span>
-        </div>
-
-        <div class="demo-shell">
-          <aside class="case-rail" aria-label="Demo cases">
-            <div class="rail-heading">
-              <span>AuthorBench chains</span>
-              <strong data-demo-case-count>14 cases</strong>
-            </div>
-            <select class="case-select" data-demo-case-select aria-label="Select demo case"></select>
-            <div class="case-list" data-demo-case-list></div>
-          </aside>
-
-          <div class="demo-workspace">
-            <div class="workspace-header">
-              <div>
-                <p class="workspace-kicker" data-demo-meta></p>
-                <h2 data-demo-title>Living Room Media Wall</h2>
-              </div>
-              <span class="status-chip success">Verified stages</span>
-            </div>
-
-            <div class="stage-filmstrip" data-demo-stage-filmstrip aria-label="Stage timeline"></div>
-
-            <div class="prompt-panel">
-              <span data-demo-stage-label></span>
-              <p data-demo-prompt></p>
-            </div>
-
+          <div class="viewer-surface" data-demo-surface>
             <div class="media-toolbar">
-              <div class="tab-row compact" data-demo-view-tabs role="tablist" aria-label="Render view selector"></div>
-              <span>Compare views</span>
-            </div>
-
-            <div class="demo-media" data-demo-image-wrap>
-              <div class="before-after" data-demo-compare>
-                <img class="compare-image compare-before" data-demo-before-image src="" alt="" loading="lazy">
-                <div class="compare-after" data-demo-after-clip>
-                  <img class="compare-image" data-demo-after-image src="" alt="" loading="lazy">
-                </div>
-                <div class="compare-divider" data-demo-compare-divider aria-hidden="true"><span></span></div>
-                <div class="compare-labels">
-                  <span data-demo-before-label>Before</span>
-                  <span data-demo-after-label>After</span>
-                </div>
-                <input class="compare-range" type="range" min="0" max="100" value="50" data-demo-compare-range aria-label="Before and after comparison slider">
+              <div class="tab-row" data-demo-view-tabs role="tablist" aria-label="Scene view"></div>
+              <div class="viewer-actions">
+                <button type="button" class="viewer-button" data-demo-reset>Reset view</button>
+                <button type="button" class="viewer-button" data-demo-fullscreen>Fullscreen</button>
               </div>
             </div>
-            <div class="demo-model" data-demo-model-wrap hidden>
-              <div class="model-overlay" data-demo-model-overlay data-state="idle">
-                <div class="model-status-row">
-                  <span class="model-state-dot" aria-hidden="true"></span>
-                  <span class="model-status" data-demo-model-status>3D view is ready</span>
-                  <strong data-demo-model-progress-text></strong>
-                </div>
-                <div class="model-progress" role="progressbar" aria-label="3D model loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-demo-model-progress>
-                  <span data-demo-model-progress-bar></span>
-                </div>
-                <p class="model-hint" data-demo-model-hint>Drag to orbit / scroll to zoom</p>
+            <div class="demo-media" data-demo-image-wrap hidden>
+              <div class="before-after">
+                <img class="compare-image compare-before" data-demo-before-image alt="" >
+                <div class="compare-after" data-demo-after-clip><img class="compare-image" data-demo-after-image alt=""></div>
+                <div class="compare-divider" data-demo-compare-divider aria-hidden="true"><span>↔</span></div>
+                <div class="compare-labels"><span data-demo-before-label>Before</span><span data-demo-after-label>After</span></div>
+                <input class="compare-range" type="range" min="0" max="100" value="50" data-demo-compare-range aria-label="Before and after comparison">
               </div>
+            </div>
+            <div class="demo-model" data-demo-model-wrap>
               <div class="model-canvas" data-demo-model></div>
-            </div>
-
-            <div class="requirement-grid">
-              <div>
-                <strong>Preserve</strong>
-                <div class="pill-row" data-demo-preserve></div>
-              </div>
-              <div>
-                <strong>Expected</strong>
-                <div class="pill-row" data-demo-expected></div>
-              </div>
-              <div>
-                <strong>Absent</strong>
-                <div class="pill-row" data-demo-absent></div>
+              <div class="model-overlay" data-demo-model-overlay data-state="idle">
+                <div class="model-status-row"><span data-demo-model-status>Loading scene…</span><strong data-demo-model-progress-text></strong></div>
+                <div class="model-progress" role="progressbar" aria-label="Scene loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-demo-model-progress><span data-demo-model-progress-bar></span></div>
+                <p class="model-hint" data-demo-model-hint>Drag to orbit · scroll to zoom</p>
               </div>
             </div>
-
-            <div class="memory-panel" aria-label="Memory trace">
-              <div class="memory-panel-head">
-                <span>Memory Trace</span>
-                <strong data-demo-memory-status>BBox-clear case</strong>
-              </div>
-              <div class="memory-flow">
-                <div class="memory-node working-node">
-                  <span>Working Memory</span>
-                  <strong data-demo-working-memory>Stage goals tracked</strong>
-                  <em data-demo-working-count></em>
-                  <div class="memory-mini-flow" aria-hidden="true">
-                    <b>Goals</b>
-                    <b>Checks</b>
-                    <b>Issues</b>
-                  </div>
-                </div>
-                <div class="memory-link" aria-hidden="true"></div>
-                <div class="memory-node scene-node">
-                  <span>Scene Memory</span>
-                  <strong data-demo-scene-memory>Preserved bindings</strong>
-                  <em data-demo-scene-count></em>
-                  <div class="memory-mini-flow" aria-hidden="true">
-                    <b>Bind</b>
-                    <b>Protect</b>
-                    <b>Reuse</b>
-                  </div>
-                </div>
-                <div class="memory-link" aria-hidden="true"></div>
-                <div class="memory-node skill-node">
-                  <span>Skill Memory</span>
-                  <strong data-demo-skill-memory>Reusable edit pattern</strong>
-                  <em data-demo-skill-tag></em>
-                  <div class="skill-mini-flow" aria-hidden="true">
-                    <b>Plan</b>
-                    <b>Apply</b>
-                    <b>Verify</b>
-                  </div>
-                  <small data-demo-skill-type>Add object</small>
-                </div>
-              </div>
-            </div>
+            <p class="viewer-feedback" data-demo-feedback role="status"></p>
           </div>
+          <div class="edit-story" aria-live="polite">
+            <span class="edit-story-label" data-demo-stage-label></span>
+            <p data-demo-instruction></p>
+          </div>
+          <form class="edit-composer" data-demo-composer>
+            <label for="edit-command">Example instruction <span data-demo-command-step></span></label>
+            <textarea id="edit-command" data-demo-command readonly rows="3" aria-describedby="command-hint"></textarea>
+            <div class="composer-footer">
+              <span id="command-hint">Send the preset instruction to see its result.</span>
+              <button type="submit" class="button primary" data-demo-send>Send instruction <span aria-hidden="true">↑</span></button>
+            </div>
+            <p class="command-status" data-demo-command-status role="status"></p>
+          </form>
+          <div class="sequence-controls">
+            <button type="button" class="viewer-button" data-demo-previous>Previous</button>
+            <div class="stage-filmstrip" data-demo-stage-filmstrip aria-label="Sequence stages"></div>
+            <button type="button" class="viewer-button" data-demo-replay>Replay edit</button>
+            <button type="button" class="viewer-button" data-demo-play>Play all</button>
+          </div>
+          <details class="instruction-details"><summary>Full instruction</summary><p data-demo-prompt></p></details>
         </div>
-      </section>
+      </div>
     </div>
   </section>
 
@@ -231,8 +188,8 @@
           introduce AuthorBench, offering 145 constrained construction cases and a 1,584-case
           preservation-aware editing pool paired with external structured checks. On full
           construction cases, <strong>MUSE</strong> improves All-Goal success from 37.9 to 80.7
-          and surface-constraint fulfillment from 35.0 to 92.6 over the strongest baseline. On a
-          stratified 240-case editing test split, <strong>MUSE</strong> achieves 49.6 All-Goal
+          and surface-constraint fulfillment from 35.0 to 93.3 over the strongest baseline. On a
+          stratified 240-case editing test split, <strong>MUSE</strong> achieves 76.7 All-Goal
           success, 99.9 preservation rate, and only 0.6 unintended change rate. Beyond automated
           metrics, human evaluations on compared local-editing baselines support stronger
           alignment with user intent, and downstream navigation-proxy tests indicate stronger
@@ -310,7 +267,7 @@
           </article>
           <article class="result-card">
             <h3>Surface Constraints</h3>
-            <p class="big-number">92.6%</p>
+            <p class="big-number">93.3%</p>
             <p>Surface fulfillment, addressing a major weakness of prior layout methods.</p>
           </article>
           <article class="result-card">
@@ -319,9 +276,9 @@
             <p>Preservation rate with only 0.6% unintended change rate.</p>
           </article>
           <article class="result-card">
-            <h3>Complexity Robustness</h3>
-            <p class="big-number">96.6%</p>
-            <p>Construction retention from easy to dense complex cases.</p>
+            <h3>Editing</h3>
+            <p class="big-number">76.7%</p>
+            <p>All-Goal success on the fixed 240-case editing split.</p>
           </article>
         </div>
 
@@ -346,13 +303,13 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><th>LayoutGPT</th><td>98.4</td><td>83.8</td><td>35.0</td><td>79.0</td><td>74.1</td><td>37.9</td><td>1.4</td><td>2.3</td></tr>
-                  <tr><th>Holodeck</th><td>83.3</td><td>57.6</td><td>21.5</td><td>30.9</td><td>48.3</td><td>14.5</td><td>0.0</td><td>0.0</td></tr>
-                  <tr><th>LayoutVLM</th><td>98.0</td><td>69.7</td><td>22.1</td><td>59.3</td><td>62.3</td><td>26.9</td><td>0.0</td><td>0.0</td></tr>
-                  <tr><th>ReSpace</th><td>71.9</td><td>36.4</td><td>8.6</td><td>32.1</td><td>37.3</td><td>11.0</td><td>0.4</td><td>0.5</td></tr>
-                  <tr><th>SceneReVis</th><td>46.9</td><td>17.2</td><td>9.2</td><td>8.6</td><td>20.5</td><td>2.1</td><td>0.3</td><td>0.9</td></tr>
-                  <tr class="ours-row"><th>MUSE</th><td>99.3</td><td>93.9</td><td>92.6</td><td>82.7</td><td>92.1</td><td>80.7</td><td>0.0</td><td>0.1</td></tr>
-                </tbody>
+<tr><th scope="row">LayoutGPT</th><td>98.4</td><td>83.8</td><td>35.0</td><td>79.0</td><td>74.1</td><td>37.9</td><td>1.4</td><td>2.3</td></tr>
+<tr><th scope="row">Holodeck</th><td>83.3</td><td>57.6</td><td>21.5</td><td>30.9</td><td>48.3</td><td>14.5</td><td>0.0</td><td>0.0</td></tr>
+<tr><th scope="row">LayoutVLM</th><td>98.0</td><td>69.7</td><td>22.1</td><td>59.3</td><td>62.3</td><td>26.9</td><td>0.0</td><td>0.0</td></tr>
+<tr><th scope="row">ReSpace</th><td>71.9</td><td>36.4</td><td>8.6</td><td>32.1</td><td>37.3</td><td>11.0</td><td>0.4</td><td>0.5</td></tr>
+<tr><th scope="row">SceneReVis</th><td>46.9</td><td>17.2</td><td>9.2</td><td>8.6</td><td>20.5</td><td>2.1</td><td>0.3</td><td>0.9</td></tr>
+<tr class="ours-row"><th scope="row">MUSE</th><td>99.6</td><td>96.0</td><td>93.3</td><td>85.2</td><td>93.5</td><td>80.7</td><td>0.0</td><td>0.1</td></tr>
+</tbody>
               </table>
             </div>
           </article>
@@ -378,12 +335,12 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><th>LayoutGPT-E</th><td>86.0</td><td>21.1</td><td>19.3</td><td>42.2</td><td>36.2</td><td>25.1</td><td>95.7</td><td>1.8</td><td>5.2</td></tr>
-                  <tr><th>Edit-As-Act</th><td>30.6</td><td>14.1</td><td>5.0</td><td>16.6</td><td>5.4</td><td>84.9</td><td>17.8</td><td>0.0</td><td>0.0</td></tr>
-                  <tr><th>SceneReVis</th><td>33.6</td><td>28.2</td><td>4.2</td><td>22.0</td><td>10.4</td><td>92.6</td><td>5.9</td><td>0.8</td><td>2.1</td></tr>
-                  <tr><th>ReSpace-E</th><td>46.3</td><td>19.7</td><td>5.9</td><td>24.0</td><td>11.2</td><td>100.0</td><td>1.9</td><td>1.2</td><td>3.5</td></tr>
-                  <tr class="ours-row"><th>MUSE</th><td>76.0</td><td>47.9</td><td>83.2</td><td>69.0</td><td>49.6</td><td>99.9</td><td>0.6</td><td>0.1</td><td>0.3</td></tr>
-                </tbody>
+<tr><th scope="row">LayoutGPT-E</th><td>86.0</td><td>21.1</td><td>19.3</td><td>42.2</td><td>36.2</td><td>25.1</td><td>95.7</td><td>1.8</td><td>5.2</td></tr>
+<tr><th scope="row">Edit-As-Act</th><td>30.6</td><td>14.1</td><td>5.0</td><td>16.6</td><td>5.4</td><td>84.9</td><td>17.8</td><td>0.2</td><td>0.5</td></tr>
+<tr><th scope="row">SceneReVis</th><td>33.6</td><td>28.2</td><td>4.2</td><td>22.0</td><td>10.4</td><td>92.6</td><td>5.9</td><td>0.8</td><td>2.1</td></tr>
+<tr><th scope="row">ReSpace-E</th><td>46.3</td><td>19.7</td><td>5.9</td><td>24.0</td><td>11.2</td><td>100.0</td><td>1.9</td><td>1.2</td><td>3.5</td></tr>
+<tr class="ours-row"><th scope="row">MUSE</th><td>79.0</td><td>74.7</td><td>89.9</td><td>81.2</td><td>76.7</td><td>99.9</td><td>0.6</td><td>0.1</td><td>0.3</td></tr>
+</tbody>
               </table>
             </div>
           </article>
@@ -455,8 +412,8 @@
       }
     }
   </script>
-  <script src="static/demo-cases.js?v=demo15-preserve-consistency-20260623"></script>
-  <script type="module" src="static/demo-viewer.js?v=demo18-perspective-scale-20260623"></script>
+  <script src="static/demo-cases.js?v=send-edit-20260925"></script>
+  <script type="module" src="static/demo-viewer.js?v=send-edit-20260925"></script>
   <script src="static/animations.js"></script>
   <script>
     const copyButton = document.getElementById('copyBibtex');

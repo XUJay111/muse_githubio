@@ -1,18 +1,10 @@
 # MUSE Project Page
 
-This directory contains a static project page for MUSE.
+Public MUSE website: https://xujay111.github.io/muse_githubio/
 
-Preview locally:
+Updated with the current MUSE demo: 14 curated three-stage scene sequences,
+an 86-second video, paper figures and results. These are prepared examples, not live inference.
+Original authors, affiliations, contribution notes, arXiv link and BibTeX are retained.
 
-```bash
-cd project_page
-python3 -m http.server 8017
-```
-
-Then open:
-
-```text
-http://127.0.0.1:8017/
-```
-
-The page has no build step. It can be copied directly into a GitHub Pages repository.
+Preview from this directory with `python3 -m http.server 8017`, then open
+http://127.0.0.1:8017/. No build step or external CDN is required.
